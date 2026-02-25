@@ -1,0 +1,539 @@
+name,category,tvl_usd,num_chains,avax_only,slug
+Binance CEX,CEX,134378816698.05032,32,False,binance-cex
+Aave V3,Lending,25143080097.922592,20,False,aave-v3
+OKX,CEX,16950864551.217577,19,False,okx
+Bitfinex,CEX,16504469018.1819,20,False,bitfinex
+Bybit,CEX,14633859417.506557,35,False,bybit
+Robinhood,CEX,11431948765.376968,4,False,robinhood
+Bitget,CEX,5712653753.430194,23,False,bitget
+HTX,CEX,5420041530.69636,19,False,htx
+Gate,CEX,4594946158.677206,110,False,gate
+MEXC,CEX,4416576716.0019455,15,False,mexc
+Tether Gold,RWA,3704860271.9552383,8,False,tether-gold
+KuCoin,CEX,2947835217.298806,23,False,kucoin
+BlackRock BUIDL,RWA,2462896147.6504493,8,False,blackrock-buidl
+Pendle,Yield,2277133745.3179574,11,False,pendle
+Crypto-com,CEX,2104051267.551074,8,False,crypto-com
+Curve DEX,Dexs,1858635062.2138014,30,False,curve-dex
+Spark Liquidity Layer,Onchain Capital Allocator,1780527779.8182218,6,False,spark-liquidity-layer
+Uniswap V3,Dexs,1480845077.5278234,41,False,uniswap-v3
+HashKey Exchange,CEX,1396047855.5804992,13,False,hashkey-exchange
+Centrifuge Protocol,RWA,1350793808.6374059,9,False,centrifuge-protocol
+Spark Savings,Yield,1284506778.9571579,6,False,spark-savings
+Portal,Bridge,1245239821.6690986,24,False,portal
+Bitkub,CEX,1168507510.2147892,22,False,bitkub
+Bitstamp,CEX,1072458633.1628954,10,False,bitstamp
+Uniswap V2,Dexs,844078753.2030617,12,False,uniswap-v2
+SwissBorg,CEX,820301780.1800936,28,False,swissborg
+SolvBTC,Bridge,641515183.5849524,11,False,solvbtc
+Uniswap V4,Dexs,617228841.8684316,15,False,uniswap-v4
+OSL HK,CEX,568367569.1149482,12,False,osl-hk
+Euler V2,Lending,501334676.6838982,16,False,euler-v2
+Tornado Cash,Privacy,462015997.91095126,8,False,tornado-cash
+Indodax,CEX,385932267.1251871,17,False,indodax
+Phemex,CEX,346901100.69466543,16,False,phemex
+Nexo,CEX,341005931.1767291,7,False,nexo
+Backpack,CEX,319235622.43200105,16,False,backpack
+MEV Capital,Risk Curators,306421081.3126577,11,False,mev-capital
+Upshift,Onchain Capital Allocator,303451306.47131544,11,False,upshift
+GMX V2 Perps,Derivatives,246519891.57879114,3,False,gmx-v2-perps
+K3 Capital,Risk Curators,242165807.37496045,7,False,k3-capital
+Multipli.fi,Yield,232379262.5082659,4,False,multipli.fi
+Benqi Staked Avax,Liquid Staking,199189785.3484579,1,True,benqi-staked-avax
+Connext,Bridge,182148071.11036634,20,False,connext
+VALR,CEX,176806549.590894,7,False,valr
+PinkSale,Launchpad,168036459.65198588,6,False,pinksale
+Treehouse Protocol,DOR,148778388.3030563,3,False,treehouse-protocol
+Stake DAO,Yield,144526125.97842327,10,False,stake-dao
+Beefy,Yield Aggregator,138660544.7010144,40,False,beefy
+Axelar,Bridge,136313298.89835006,44,False,axelar
+Benqi Lending,Lending,135075306.31723237,1,True,benqi-lending
+CoinDCX,CEX,130350852.02107826,13,False,coindcx
+Aave V2,Lending,128400452.29868121,3,False,aave-v2
+BloFin,CEX,124909150.41652776,21,False,blofin
+Stargate V2,Cross Chain Bridge,121520966.06226268,24,False,stargate-v2
+UNCX Network V2,Token Locker,116053798.11990093,7,False,uncx-network-v2
+Avant avUSD,Basis Trading,110344124.1656371,1,True,avant-avusd
+Homora V2,Leveraged Farming,110273717.07445696,5,False,homora-v2
+Aura,Yield,106721087.07122217,9,False,aura
+Lagoon,Onchain Capital Allocator,105167708.26240605,16,False,lagoon
+Re7 Labs,Risk Curators,102485081.05190997,15,False,re7-labs
+Apollo Diversified Credit Securitize Fund,RWA,95953819.42730662,7,False,apollo-diversified-credit-securitize-fund
+Balancer V3,Dexs,94985074.02687241,8,False,balancer-v3
+Multichain,Bridge,92697516.74639747,54,False,multichain
+KAIO,RWA,89384305.996305,14,False,kaio
+Ourbit,CEX,81743438.7266801,8,False,ourbit
+VanEck Treasury Fund,RWA,78062586.31,4,False,vaneck-treasury-fund
+Balancer V2,Dexs,74319786.67742397,9,False,balancer-v2
+SushiSwap V3,Dexs,65485476.46827308,29,False,sushiswap-v3
+Thorchain DEX,Dexs,61558970.00572322,12,False,thorchain-dex
+SushiSwap,Dexs,61441576.86929007,38,False,sushiswap
+ZEROBASE CeDeFi,Basis Trading,55107210.032843,7,False,zerobase-cedefi
+Solv Strategies,Onchain Capital Allocator,51645388.15789958,5,False,solv-strategies
+cBridge,Bridge,50480652.34815124,29,False,cbridge
+Tulipa Capital,Risk Curators,50203503.87218164,8,False,tulipa-capital
+Silo V2,Lending,47275230.58149349,4,False,silo-v2
+Coin8,CEX,47270140.49742523,9,False,coin8
+Flipster,CEX,46404052.626790404,22,False,flipster
+Team Finance,Token Locker,45925799.447291456,17,False,team-finance
+NEAR Intents,Cross Chain Bridge,45753202.02684205,24,False,near-intents
+OSL,CEX,45606446.063002445,14,False,osl
+Blackhole CLMM,Dexs,45052175.7748898,1,True,blackhole-clmm
+Poly Network,Bridge,44728247.74000001,31,False,poly-network
+Brickken,RWA,41081158.048217066,5,False,brickken
+IPOR Fusion,Yield Aggregator,39984056.171783,8,False,ipor-fusion
+Superform,Yield Aggregator,36136652.54741128,10,False,superform
+YieldFi,Yield Aggregator,33276325.698705867,13,False,yieldfi
+Vesper,Yield Aggregator,33104068.93916657,5,False,vesper
+Pionex,CEX,32003589.74201314,8,False,pionex
+Spectra V2,Yield,31471774.908699427,12,False,spectra-v2
+Joe V2.2,Dexs,31386076.676309288,3,False,joe-v2.2
+vfat.io,Yield Aggregator,30538872.28649701,18,False,vfat.io
+Steer Protocol,Liquidity manager,27369395.71659911,42,False,steer-protocol
+Pharaoh V3,Dexs,27287291.235263366,1,True,pharaoh-v3
+DxSale,Launchpad,26013965.826960262,22,False,dxsale
+Wan Bridge,Bridge,22960970.607292928,36,False,wan-bridge
+Allbridge Core,Bridge,22407627.163734768,14,False,allbridge-core
+40 Acres,Lending,21500891.07023524,3,False,40-acres
+XSY,Basis Trading,20971420.21447211,1,True,xsy
+Hypha,Liquid Staking,20250295.026091944,1,True,hypha
+Ankr,Liquid Staking,20034458.61237419,8,False,ankr
+Okcoin,CEX,19369022.813708253,6,False,okcoin
+Asseto AoABT,RWA,18966719.42794094,2,False,asseto-aoabt
+WEEX,CEX,18413186.06546336,11,False,weex
+OpenTrade,RWA,17271982.507944558,3,False,opentrade
+Synapse,Cross Chain Bridge,16574959.652614199,19,False,synapse
+Orderly Bridge,Bridge,16488127.838034261,17,False,orderly-bridge
+Contango V2,Derivatives,15848577.373605926,10,False,contango-v2
+DODO AMM,Dexs,15657537.22713644,15,False,dodo-amm
+TermFinance Vaults,Yield,15277384.4590809,6,False,termfinance-vaults
+Yield Yak Aggregator,Yield Aggregator,15144807.558932956,3,False,yield-yak-aggregator
+Folks Finance xChain,Lending,14571169.006450372,8,False,folks-finance-xchain
+Frax Swap,Dexs,13928689.609821543,10,False,frax-swap
+Coinsquare,CEX,13686093.022501756,9,False,coinsquare
+Joe DEX,Dexs,13242065.21635303,4,False,joe-dex
+HashKey Global,CEX,13090758.142649982,12,False,hashkey-global
+BackedFi,RWA,12502052.394875972,8,False,backedfi
+Republic Note,RWA,10994240.48158753,1,True,republic-note
+FlokiFi Locker,Token Locker,10689563.96125526,15,False,flokifi-locker
+ACryptoS,Liquidity manager,10561955.547775736,17,False,acryptos
+Abracadabra Spell,CDP,10453153.076895926,8,False,abracadabra-spell
+Stargate V1,Cross Chain Bridge,10363694.5010831,13,False,stargate-v1
+LeveX,CEX,9445104.428565513,10,False,levex
+Symbiosis,Cross Chain Bridge,9290559.784768427,50,False,symbiosis
+Fastex,CEX,9286202.575140797,14,False,fastex
+VNX,RWA,8919762.521032207,11,False,vnx
+MUX Perps,Derivatives,8857588.778951995,5,False,mux-perps
+BiFi,Lending,8363610.101144635,5,False,bifi
+Bitbond Lockers,Token Locker,7806717.984820917,7,False,bitbond-lockers
+Royco V2,Yield,7560538.027076767,2,False,royco-v2
+Dexalot Portfolio,Bridge,6885172.518215465,5,False,dexalot-portfolio
+Superfluid,Payments,6706565.315819617,10,False,superfluid
+Turtle Club,Onchain Capital Allocator,6702653.710669225,3,False,turtle-club
+WOOFi Earn,Yield,6299400.090505236,9,False,woofi-earn
+Keyring,Risk Curators,6224494.751305107,1,True,keyring
+Blackhole AMM,Dexs,6188615.945033834,1,True,blackhole-amm
+Allbridge Classic,Bridge,6046422.847709586,13,False,allbridge-classic
+Balanced Exchange,Dexs,6000499.164253278,11,False,balanced-exchange
+Avant avBTC,Onchain Capital Allocator,5905061.831239332,1,True,avant-avbtc
+Pharaoh CL,Dexs,5836584.474135806,1,True,pharaoh-cl
+WOOFi Swap,Dexs,5655714.560720462,16,False,woofi-swap
+Sablier Lockup,Payments,5586860.637617216,28,False,sablier-lockup
+Autofarm,Yield Aggregator,5584560.879882226,20,False,autofarm
+NonKYC,CEX,5480778.392401021,15,False,nonkyc
+Angle,CDP,5402562.2768165795,8,False,angle
+Gamma,Liquidity manager,4492995.087901323,36,False,gamma
+DeltaPrime,Leveraged Farming,4163809.046833371,2,False,deltaprime
+Sierra Protocol,Yield,3756259.180256767,1,True,sierra-protocol
+Joe V2.1,Dexs,3703730.423893108,4,False,joe-v2.1
+Tothemoon,CEX,3688270.5823105406,10,False,tothemoon
+Pharaoh Legacy,Dexs,3556796.4237492015,1,True,pharaoh-legacy
+Parallel Protocol V3,CDP,3524589.9093847442,5,False,parallel-protocol-v3
+Hashport,Bridge,3513717.116190763,12,False,hashport
+Ribbon,Options Vault,3426424.9862521365,4,False,ribbon
+QiDao,CDP,3357650.5022502653,14,False,qidao
+Wombat Exchange,Dexs,3288428.5750164785,7,False,wombat-exchange
+HiYield,RWA,3228740.955584193,2,False,hiyield
+GMX V1 Perps,Derivatives,3080661.136577141,2,False,gmx-v1-perps
+Ploutos Money,Lending,3004837.355651922,9,False,ploutos-money
+Guru Network Classic,Yield,2992844.222260306,10,False,guru-network-classic
+Sushi BentoBox,Yield,2910360.6516375435,9,False,sushi-bentobox
+Dexalot DEX,Dexs,2780748.7419498083,5,False,dexalot-dex
+VenomBridge,Bridge,2640492.038549104,6,False,venombridge
+WOO X,CEX,2602786.227972599,9,False,woo-x
+CORE Bridge,Canonical Bridge,2569066.131170624,7,False,core-bridge
+EmpireDEX,Dexs,2494882.734268723,9,False,empiredex
+Joe Lend,Lending,2329079.365180089,1,True,joe-lend
+Arena DEX,Dexs,1877093.5069936898,1,True,arena-dex
+OmniBTC,Lending,1864246.9500507351,8,False,omnibtc
+Gyroscope Protocol,Dexs,1808656.589877135,10,False,gyroscope-protocol
+Gro,Yield,1782520.445452371,2,False,gro
+Pangolin V2,Dexs,1748389.4744693,4,False,pangolin-v2
+LlamaPay,Payments,1543598.8311605249,22,False,llamapay
+Messina Bridge,Cross Chain Bridge,1522510.2945710926,9,False,messina-bridge
+EverRise,Cross Chain Bridge,1520782.7372869314,5,False,everrise
+Stable Jack V1,Yield,1512012.5988234356,1,True,stable-jack-v1
+ApeX Pro,Derivatives,1431820.0826897186,7,False,apex-pro
+Arkham Exchange,CEX,1384976.3712105325,6,False,arkham-exchange
+Suzaku,Restaking,1382774.6675385237,1,True,suzaku
+Meson,Cross Chain Bridge,1353281.3746742974,44,False,meson
+Bridgers,Dexs,1181639.9428078295,16,False,bridgers
+TermFinance Lend,Lending,1175287.8437284671,4,False,termfinance-lend
+CIAN Automation,Yield,1042654.6499423918,3,False,cian-automation
+dForce Lending,Lending,1034843.2307136689,8,False,dforce-lending
+KyberSwap Classic,Dexs,1029819.2161995844,15,False,kyberswap-classic
+PumpSpace,Dexs,999966.568591949,1,True,pumpspace
+Kine Finance,Yield,971975.0064554259,4,False,kine-finance
+GOLDSTATION RWA,RWA,934817.7326760861,2,False,goldstation-rwa
+Thetanuts Finance,Yield,933362.1430634124,11,False,thetanuts-finance
+Opyn Gamma,Options,891913.8780493033,3,False,opyn-gamma
+DefiEdge,Liquidity manager,878329.8333478232,14,False,defiedge
+Meter Passport,Bridge,868338.3133790923,8,False,meter-passport
+Sablier Flow,Payments,847685.9121259233,27,False,sablier-flow
+Impermax V2,Lending,812379.6685747826,15,False,impermax-v2
+GMD Protocol,Yield Aggregator,800617.8409714673,2,False,gmd-protocol
+Pharaoh V3 Legacy,Dexs,793729.1014930023,1,True,pharaoh-v3-legacy
+Phuture,Indexes,792708.7073193672,2,False,phuture
+PoolTogether V4,Yield Lottery,753815.4743596639,4,False,pooltogether-v4
+Mint Club V2,Launchpad,735319.0320676652,13,False,mint-club-v2
+AquaBank,Yield,713874.9153646023,1,True,aquabank
+Clearpool Lending,Uncollateralized Lending,629285.0422545256,9,False,clearpool-lending
+Umami Finance,Yield,617492.8628898079,2,False,umami-finance
+Ajna V2,Lending,591703.0441458131,13,False,ajna-v2
+Hashflow,DEX Aggregator,576679.8294396861,6,False,hashflow
+Tarot,Lending,566426.6099449473,13,False,tarot
+NerveBridge,Bridge,551609.5832496514,38,False,nervebridge
+BIM,Yield Aggregator,518955.4362124845,12,False,bim
+Beta Finance V1,Lending,508033.0783621677,2,False,beta-finance-v1
+Sablier Legacy,Payments,482689.3358249335,7,False,sablier-legacy
+RadioShack,Dexs,475682.22359279956,8,False,radioshack
+Secured Finance Lending,Lending,442113.91737197735,5,False,secured-finance-lending
+Yield Yak Staked Avax,Liquid Staking,440093.5085915282,1,True,yield-yak-staked-avax
+Geode,Liquid Staking,436930.47044534486,1,True,geode
+Antfarm finance,Liquidity manager,434433.12889662146,4,False,antfarm-finance
+Octus Bridge,Bridge,409832.95860897325,6,False,octus-bridge
+Cytonic Airdrop Campaign,Farm,407820.002367697,11,False,cytonic-airdrop-campaign
+VaporDex V1,Dexs,397014.5316389227,3,False,vapordex-v1
+FortiFi,Yield Aggregator,395702.168790151,1,True,fortifi
+Knit Finance,Bridge,383875.6141403846,18,False,knit-finance
+88mph,Lending,383801.7979927593,4,False,88mph
+Ante Finance,Insurance,380979.19587380707,8,False,ante-finance
+Prime Protocol,Lending,366012.462679929,9,False,prime-protocol
+Pangolin V3,Dexs,362064.6311401191,2,False,pangolin-v3
+Salvor,NFT Marketplace,350619.86925307586,1,True,salvor
+BoringDAO,Cross Chain Bridge,330757.9940159646,20,False,boringdao
+Iron Finance,CDP,315969.83359933336,3,False,iron-finance
+Jarvis Network,Derivatives,296223.43496704235,6,False,jarvis-network
+Snowball,Yield,295577.7783308485,1,True,snowball
+Napier,Yield,284158.18613172387,11,False,napier
+Clovis,Yield Aggregator,282946.8739003367,10,False,clovis
+Latoken,CEX,276087.2541803085,19,False,latoken
+Sushi Trident,Dexs,274513.6762576784,8,False,sushi-trident
+Diamondswap,Dexs,268605.7624002319,5,False,diamondswap
+Dyson,Liquidity manager,258222.2526639757,7,False,dyson
+SeaFi,Yield,237497.11984386755,1,True,seafi
+OnX Finance,Yield Aggregator,235049.08618854667,4,False,onx-finance
+Voltz,Derivatives,232871.09790520146,3,False,voltz
+Elk,Dexs,219033.54747551776,31,False,elk
+ShimmerBridge,Bridge,209251.57856369656,8,False,shimmerbridge
+Iron Bank,Lending,209126.22069995597,4,False,iron-bank
+OpenOcean,DEX Aggregator,184971.75876972405,8,False,openocean
+Arena SocialFi,SoFi,183271.10163712213,1,True,arena-socialfi
+Balmy,DCA Tools,182513.4124060628,10,False,balmy
+Impossible Finance,Launchpad,177594.1447848628,7,False,impossible-finance
+Joe V2,Dexs,157462.89640783146,3,False,joe-v2
+Granary Finance,Lending,152886.80558936234,8,False,granary-finance
+Xave Finance,Dexs,150000.58057916194,3,False,xave-finance
+Float,Derivatives,144357.96676461876,2,False,float
+Sushi Kashi,Lending,142338.75279725032,5,False,sushi-kashi
+Varlamore Capital,Risk Curators,140175.93498715456,4,False,varlamore-capital
+Nested,Indexes,136587.85503253771,6,False,nested
+InsurAce,Insurance,133820.602679136,4,False,insurace
+CrossCurve,Cross Chain Bridge,129417.9568883502,20,False,crosscurve
+Cook Finance,Indexes,127049.55868304943,4,False,cook-finance
+Colony,Yield,119967.68626185045,1,True,colony
+KyberSwap Elastic,Dexs,118495.17098592907,11,False,kyberswap-elastic
+Hyphen,Bridge,100361.00731605997,6,False,hyphen
+Domani Protocol,Indexes,92632.87760844931,3,False,domani-protocol
+xDollar,CDP,90959.24301234906,5,False,xdollar
+Olive Cash,Yield,88887.16712831978,3,False,olive-cash
+Revest Finance,NFT Lending,84907.49540036009,6,False,revest-finance
+Penguin Finance,Yield,83835.61581404421,1,True,penguin-finance
+Defrost,CDP,81194.4452897324,1,True,defrost
+Hubble Exchange,Derivatives,78174.96242874769,1,True,hubble-exchange
+StoneDefi,Yield Aggregator,70362.5873794079,4,False,stonedefi
+Nereus Finance,Lending,69906.68773555508,1,True,nereus-finance
+TradeOgre,CEX,66947.10586008351,6,False,tradeogre
+Token Mill,Launchpad,64222.777577191584,2,False,token-mill
+Hotbit,CEX,63016.26714865709,12,False,hotbit
+YieldWolf,Yield,62236.73132328156,7,False,yieldwolf
+Bitbond Sales,Launchpad,62056.382781629785,7,False,bitbond-sales
+SteakHut Liquidity,Liquidity manager,61120.984153242636,2,False,steakhut-liquidity
+OrderNChaos,Algo-Stables,60561.22521166142,5,False,ordernchaos
+GOLDSTATION DEX V3,Dexs,59753.97031089614,1,True,goldstation-dex-v3
+Complus Network,Dexs,59606.86142179919,4,False,complus-network
+Oddz,Options,59187.07788393579,2,False,oddz
+HunnySwap,Dexs,58357.12306246721,1,True,hunnyswap
+CrossChain Bridge,Cross Chain Bridge,55382.12725141237,5,False,crosschain-bridge
+Definitive Yield Vaults,Yield,51961.50049403968,6,False,definitive-yield-vaults
+Frost Finance,Yield,51726.89397210548,1,True,frost-finance
+Stable Jack V2,Yield,48814.09547274661,3,False,stable-jack-v2
+Flair Dex,Dexs,48761.33503893331,1,True,flair-dex
+Lydia,Dexs,47543.65383435842,1,True,lydia
+Platypus Finance,Dexs,45788.56830237808,1,True,platypus-finance
+CougarSwap,Yield,42613.588885870486,8,False,cougarswap
+HurricaneSwap,Dexs,38853.37863906148,1,True,hurricaneswap
+ChainGPT,Launchpad,38782.709102897774,10,False,chaingpt
+Risk Harbor,Insurance,38751.77918839415,9,False,risk-harbor
+Axial,Dexs,37082.68866858547,1,True,axial
+BXH,Dexs,36929.600189744364,5,False,bxh
+HedgeFarm,Yield,36360.84775581577,1,True,hedgefarm
+EulerDebt,Secondary Debt Markets,36150.47574611403,5,False,eulerdebt
+Altitude,Cross Chain Bridge,35435.55755901091,9,False,altitude
+WOWswap,Dexs,35222.72784695939,8,False,wowswap
+Poolside,Dexs,34953.96322513978,4,False,poolside
+DotOracle,Bridge,34651.020485014466,5,False,dotoracle
+0.exchange,Dexs,34319.633082868626,3,False,0.exchange
+Button Wrappers,CDP,33873.14330593075,4,False,button-wrappers
+EmiSwap,Dexs,33547.83805005922,7,False,emiswap
+DexPad,Launchpad,33173.74440125058,4,False,dexpad
+KEWL EXCHANGE,Dexs,32284.667473584865,6,False,kewl-exchange
+Tranche Finance,Yield,32118.615421460407,4,False,tranche-finance
+Joe Stek,Farm,32006.079186737956,1,True,joe-stek
+Kalmy App,Yield,31998.38636459183,3,False,kalmy-app
+PyreSwap,Dexs,31416.908118789754,3,False,pyreswap
+Fractal Protocol,Yield,31368.10654972082,4,False,fractal-protocol
+Excellion Finance,Risk Curators,29711.560372508608,1,True,excellion-finance
+Everclear,Cross Chain Bridge,27686.942776596316,22,False,everclear
+Mushrooms Finance,Yield Aggregator,27608.906996568625,5,False,mushrooms-finance
+Grim Finance,Yield,27121.688576349694,6,False,grim-finance
+Arena Launch,Launchpad,26857.721827368314,1,True,arena-launch
+Omni Exchange V3,Dexs,25711.39717744724,7,False,omni-exchange-v3
+Canary,Dexs,25615.78092411902,2,False,canary
+Ulysses,Bridge,25134.78322823849,12,False,ulysses
+Swapsicle V1,Dexs,25001.893189385053,8,False,swapsicle-v1
+HakuSwap,Dexs,24919.934604434922,1,True,hakuswap
+Interport Finance,Cross Chain Bridge,24903.304722914516,18,False,interport-finance
+CreateMyToken,Launchpad,24298.160993156085,8,False,createmytoken
+Vector Finance,Yield,22397.357849619384,1,True,vector-finance
+Growth DeFi,Yield,22285.378143753394,3,False,growth-defi
+TopShelf,CDP,22198.923826861643,3,False,topshelf
+Singular Farm,Yield,22107.01284300896,4,False,singular-farm
+Cycle Finance,Yield Aggregator,21182.614543373358,1,True,cycle-finance
+Waterfall DeFi,Yield Aggregator,19960.075689992962,2,False,waterfall-defi
+Baguette,Dexs,19592.48292195686,1,True,baguette
+Struct Finance,Yield,19348.04264363581,1,True,struct-finance
+Stabilize,CDP,18996.607848837273,1,True,stabilize
+Apex DeFi,Dexs,17642.055743845736,3,False,apex-defi
+VaporDex V2,Dexs,17291.68702521279,3,False,vapordex-v2
+Abacus,Governance Incentives,17124.646896851922,6,False,abacus
+UniVoucher,Payments,16943.396381617564,7,False,univoucher
+Gaj Finance,Yield,16734.358342280706,2,False,gaj-finance
+Yel Finance,Yield,16322.561533085993,8,False,yel-finance
+BooFinance,Yield,16089.157714047771,1,True,boofinance
+Magic Square,Farm,15416.376319694657,5,False,magic-square
+Coinscope,Token Locker,14398.63581255495,9,False,coinscope
+dexVAULTS,Yield,14325.728078649961,8,False,dexvaults
+Sherpa Cash,Privacy,13693.448682280574,1,True,sherpa-cash
+Teddy Cash,CDP,13025.689339029801,1,True,teddy-cash
+Vee Finance,Lending,12991.953713280096,2,False,vee-finance
+FWX DEX,Dexs,12687.710119454381,2,False,fwx-dex
+ThorusFi,Dexs,12657.906420689336,2,False,thorusfi
+Aperture LM,Liquidity manager,12644.903785553539,2,False,aperture-lm
+ETHA Lend,Yield,12101.863188788098,2,False,etha-lend
+CavalRe,Dexs,11950.6451036066,1,True,cavalre
+Antimatter,Options,11426.384085403353,5,False,antimatter
+Kuu Finance,Dexs,11300.58012866533,1,True,kuu-finance
+Stryke SSOV,Options,10712.490525740748,4,False,stryke-ssov
+Router Protocol,Cross Chain Bridge,9863.43483933711,11,False,router-protocol
+OrcaDAO,Lending,9461.535014753736,1,True,orcadao
+Banksy Farm,Yield,9355.304663630619,1,True,banksy-farm
+Hedgey,Payments,9280.29386135453,11,False,hedgey
+SoliSnek Finance,Dexs,9217.002947201927,1,True,solisnek-finance
+YetiSwap,Dexs,8976.993309325379,1,True,yetiswap
+StormSwap,Yield,8807.415337101043,2,False,stormswap
+Embr Finance,Dexs,8693.922566445654,1,True,embr-finance
+Glacier Exchange V2,Dexs,8523.10553720076,1,True,glacier-exchange-v2
+Spice Trade,Algo-Stables,8223.877784582794,4,False,spice-trade
+Sweep,RWA,8147.27941395292,7,False,sweep
+Archon Bridge,Bridge,7822.040345967006,3,False,archon-bridge
+Magik Farm,Yield Aggregator,7753.738121695264,12,False,magik-farm
+Moremoney,Lending,7483.856979152742,1,True,moremoney
+Mozaic,Yield,7458.320940512892,6,False,mozaic
+Brokkr Finance,Indexes,7048.59407831309,2,False,brokkr-finance
+Omni Exchange V2,Dexs,6765.2851688268975,7,False,omni-exchange-v2
+Alligator,Dexs,6579.781201844235,1,True,alligator
+Baklava Space,Yield,6422.384635004974,4,False,baklava-space
+UNO farm,Yield Aggregator,6322.31350000313,4,False,uno-farm
+Baki,CDP,5967.765172936924,1,True,baki
+Native Swap,Dexs,5642.9692162544825,9,False,native-swap
+Zabu Finance,Yield Aggregator,5491.714656374035,1,True,zabu-finance
+Nord Finance,Yield Aggregator,4876.237675716038,3,False,nord-finance
+DexFinance ETF,Yield,4681.8672588954805,8,False,dexfinance-etf
+Monroe Protocol,CDP,4672.21585036381,3,False,monroe-protocol
+dripit,Prediction Market,4292.529563723135,1,True,dripit
+PartySwap,Dexs,4256.282841054766,1,True,partyswap
+Robo-Vault,Yield,4123.189577476645,2,False,robo-vault
+Avalps,Reserve Currency,4107.417331537986,1,True,avalps
+ElasticSwap,Dexs,4104.857526865814,2,False,elasticswap
+Sushi Furo,Payments,4068.106977643197,11,False,sushi-furo
+Envelop,NftFi,3629.568649862508,7,False,envelop
+The Ennead Farm,Yield,3515.0861973795336,2,False,the-ennead-farm
+Leech Protocol,Yield Aggregator,3501.5349403954774,3,False,leech-protocol
+UniFi,Dexs,3422.1422372288375,10,False,unifi
+CryptoYieldFocus,Farm,3377.7539347178354,1,True,cryptoyieldfocus
+RelayChain,Bridge,3363.8453135840573,13,False,relaychain
+Oh Finance,Yield,3032.719759596831,4,False,oh-finance
+GoldLink,Leveraged Farming,3031.23998253702,2,False,goldlink
+Atlantis Loans,Lending,2902.3083267515694,4,False,atlantis-loans
+StackFi,Lending,2801.3344768378324,2,False,stackfi
+SoulSwap,Dexs,2622.3193057617714,2,False,soulswap
+Blizzard,Yield,2535.9890248214997,1,True,blizzard
+2Pi Network,Yield,2390.645429893856,4,False,2pi-network
+Glacier Exchange V3,Dexs,2290.247661977955,1,True,glacier-exchange-v3
+FWX Derivatives,Derivatives,2238.418352180334,3,False,fwx-derivatives
+Subzero ZSwap,Dexs,2093.9485485083915,1,True,subzero-zswap
+SpiritDAO,Reserve Currency,2003.927571307616,1,True,spiritdao
+Bitcointry,CEX,1991.9147949506314,7,False,bitcointry
+Archly V2,Dexs,1957.9776351609348,22,False,archly-v2
+The Seed Farm,Yield,1838.7940897253964,1,True,the-seed-farm
+WhaleSwap,Dexs,1568.0957932845477,7,False,whaleswap
+Ara Finance,Reserve Currency,1482.6808846521478,1,True,ara-finance
+printyfinance,Dexs,1281.3931590914524,1,True,printyfinance
+MintSwap,Farm,1158.8953884093328,1,True,mintswap
+FerdyFlip,Luck Games,1155.323341548925,3,False,ferdyflip
+Symphony Finance,Dexs,853.5201727636577,3,False,symphony-finance
+Sierra,Reserve Currency,842.252923323465,1,True,sierra
+Kassandra DAO,Indexes,817.9173257460975,2,False,kassandra-dao
+PirateDAO,Reserve Currency,796.6251838230373,1,True,piratedao
+Kayak V2,Dexs,788.8841374074888,2,False,kayak-v2
+Swift Finance,Yield,765.7039420269725,1,True,swift-finance
+Omni Exchange Flux,Dexs,690.5783657903497,7,False,omni-exchange-flux
+North Pole,CDP,689.3610021477909,1,True,north-pole
+XY Finance,Cross Chain Bridge,591.687397590384,25,False,xy-finance
+Hot Takes,SoFi,563.5746666779265,1,True,hot-takes
+Steadefi,Leveraged Farming,544.6862343048522,2,False,steadefi
+Defi Yield Protocol,Yield,515.7205679831766,3,False,defi-yield-protocol
+VaultLayer,Liquid Staking,479.17054380689444,9,False,vaultlayer
+DefiCurrent,Yield Aggregator,423.7115008586934,3,False,deficurrent
+Grave Finance,Algo-Stables,383.30285733971664,1,True,grave-finance
+onAVAX,Dexs,331.52330139434974,1,True,onavax
+Augmented Finance,Lending,326.65169644014406,4,False,augmented-finance
+Spicy DAO,Reserve Currency,270.7656155124651,1,True,spicy-dao
+Return Finance,Yield Aggregator,256.72394464333433,4,False,return-finance
+Monocerus,Dexs,201.23446457730455,2,False,monocerus
+Incognito,Dexs,137.11909395807544,5,False,incognito
+Avaware,Yield,133.73805841975928,1,True,avaware
+Aboard Exchange,Derivatives,120.93422545635288,8,False,aboard-exchange
+FlashLiquidity,Dexs,89.58999976466035,5,False,flashliquidity
+SecondSwap,OTC Marketplace,86.00215798511225,3,False,secondswap
+The Dragon's Lair,Yield,73.44836880040911,1,True,the-dragons-lair
+ApexSwap,Dexs,69.73821669376733,1,True,apexswap
+Life DAO,Reserve Currency,67.38702541355721,1,True,life-dao
+Gondola Finance,Dexs,66.02914332990972,1,True,gondola-finance
+Tarina,Dexs,51.45983524342172,1,True,tarina
+Amogus DAO,Reserve Currency,44.33225962549005,1,True,amogus-dao
+AvaViking,Yield,41.58082166669896,1,True,avaviking
+C3 Exchange,Cross Chain Bridge,41.54061177294692,7,False,c3-exchange
+Securo Finance,Indexes,34.0,4,False,securo-finance
+TreeHouse Finance,Yield,29.06203942303773,1,True,treehouse-finance
+RubyDex,Derivatives,24.13359619371612,10,False,rubydex
+Genius,Yield,22.21410473647097,5,False,genius
+Butterfly Finance,Farm,17.059378259994137,1,True,butterfly-finance
+Reservoir,Dexs,16.01314342736549,1,True,reservoir
+NoahArkDAO,Reserve Currency,15.538035765140759,1,True,noaharkdao
+Coup Farm,Yield,15.15290954025074,1,True,coup-farm
+ReHold V2,Yield,14.374819886623175,9,False,rehold-v2
+Crypto Lottery,Luck Games,10.569773320622629,6,False,crypto-lottery
+FutureSwap,Derivatives,9.748698779786487,3,False,futureswap
+Papa DAO,Reserve Currency,7.20208788232565,1,True,papa-dao
+Tornadao,Reserve Currency,6.694802850296311,1,True,tornadao
+Crocodile Finance,Algo-Stables,4.865904569002782,1,True,crocodile-finance
+Gaia DAO,Reserve Currency,4.806608170193802,1,True,gaia-dao
+DumpEX,Farm,4.599869631364849,11,False,dumpex
+TempoDAO,Reserve Currency,3.358851089391962,1,True,tempodao
+Multi-Chain Miner,Ponzi,2.9095417767965,4,False,multi-chain-miner
+BayMax,Derivatives,2.527025979528775,1,True,baymax
+ZKEX,Dexs,2.048684967529911,9,False,zkex
+SashimiDAO,Reserve Currency,1.442948935326536,1,True,sashimidao
+DONASWAP V2,Dexs,1.0180186883660742,29,False,donaswap-v2
+NODO,Prediction Market,0.8452719683352007,5,False,nodo
+Vacus Finance,Yield Aggregator,0.8178986429013764,1,True,vacus-finance
+Magnet DAO,Algo-Stables,0.6556692600864312,1,True,magnet-dao
+Maximizer,Reserve Currency,0.45727932500696494,1,True,maximizer
+DeepSeaDAO,Reserve Currency,0.44684636790337295,1,True,deepseadao
+Snowdog,Reserve Currency,0.2915706915267717,1,True,snowdog
+ReHold V1,Yield,0.14031308145413587,6,False,rehold-v1
+Lama Miner,Ponzi,0.09960586027868117,1,True,lama-miner
+Meow Miner,Ponzi,0.03248968911831385,1,True,meow-miner
+Spherium,Cross Chain Bridge,0.025272856360847154,13,False,spherium
+Swing DAO,Reserve Currency,0.02068893345117003,1,True,swing-dao
+Cables Finance,Dexs,2.418160918597672e-05,2,False,cables-finance
+ValhallaDAO,Reserve Currency,1.7208266877309225e-05,1,True,valhalladao
+ZeroShift,Reserve Currency,1.623399170646282e-11,1,True,zeroshift
+Piggybank DAO,Reserve Currency,6.680694210000001e-16,1,True,piggybank-dao
+TokensFarm,Yield,0.0,7,False,tokensfarm
+Grape Finance,Algo-Stables,0.0,1,True,grape-finance
+Cesta Finance,Reserve Currency,0.0,1,True,cesta-finance
+Snowtomb,Algo-Stables,0.0,1,True,snowtomb
+IceCream Finance,Algo-Stables,0.0,1,True,icecream-finance
+Ripae,Algo-Stables,0.0,7,False,ripae
+ProjectX,Yield,0.0,1,True,projectx
+Thor Financial,Yield,0.0,1,True,thor-financial
+VaporFi,Yield,0.0,1,True,vaporfi
+Arable Protocol,Synthetics,0.0,1,True,arable-protocol
+Volta DAO,Reserve Currency,0.0,2,False,volta-dao
+Snowyowl,Algo-Stables,0.0,1,True,snowyowl
+Echidna Finance,Yield,0.0,1,True,echidna-finance
+Polar Bear Finance,Algo-Stables,0.0,1,True,polar-bear-finance
+Yeti Finance,CDP,0.0,1,True,yeti-finance
+Printer Financial,Bridge,0.0,6,False,printer-financial
+RenVM,Bridge,0.0,9,False,renvm
+0x NODES,Yield Aggregator,0.0,6,False,0x-nodes
+SteakHut,Farm,0.0,1,True,steakhut
+ZeroSwap,Dexs,0.0,4,False,zeroswap
+Frozen Walrus Finance,Algo-Stables,0.0,1,True,frozen-walrus-finance
+BetSwirl,Prediction Market,0.0,6,False,betswirl
+CryptoBlades,Gaming,0.0,7,False,cryptoblades
+Wolf Safe Poor People,Yield,0.0,4,False,wolf-safe-poor-people
+Champion Finance,Algo-Stables,0.0,1,True,champion-finance
+EMDX,Derivatives,0.0,1,True,emdx
+Freebie Life Finance,Yield Lottery,0.0,1,True,freebie-life-finance
+Subzero+,Reserve Currency,0.0,1,True,subzero+
+Dypius,Yield,0.0,3,False,dypius
+Vertex Perps,Derivatives,0.0,7,False,vertex-perps
+Arrow Markets,Options,0.0,1,True,arrow-markets
+Cleopatra DAO,Yield Aggregator,0.0,1,True,cleopatra-dao
+Kandyland Finance,Reserve Currency,0.0,1,True,kandyland-finance
+Hermes Finance,Algo-Stables,0.0,1,True,hermes-finance
+Crabada,Gaming,0.0,1,True,crabada
+Anchor,Lending,0.0,2,False,anchor
+Zookeeper,Yield,0.0,2,False,zookeeper
+O3 Swap,Cross Chain Bridge,0.0,14,False,o3-swap
+Avalaunch,Dexs,0.0,1,True,avalaunch
+Volta Club,Reserve Currency,0.0,2,False,volta-club
+Ramp,CDP,0.0,4,False,ramp
+SmartCoin,Yield,0.0,1,True,smartcoin
+Snowbank,Reserve Currency,0.0,1,True,snowbank
+Blizz Finance,Lending,0.0,1,True,blizz-finance
+EverestDAO,DAO Service Provider,0.0,1,True,everestdao
+Fortress,Reserve Currency,0.0,1,True,fortress
+R U Generous,Reserve Currency,0.0,1,True,r-u-generous
+VikingsFinance,Reserve Currency,0.0,1,True,vikingsfinance
+GalaxyGoogle DAO,Reserve Currency,0.0,2,False,galaxygoogle-dao
+HoneyFarm,Yield,0.0,2,False,honeyfarm
+MidasDAO,Reserve Currency,0.0,1,True,midasdao
+O2 DAO,Reserve Currency,0.0,1,True,o2-dao
+Ice DAO,Reserve Currency,0.0,1,True,ice-dao
+RagnarokDAO,Reserve Currency,0.0,1,True,ragnarokdao
+Vortex DAO,Reserve Currency,0.0,1,True,vortex-dao
+CakeDAO,Reserve Currency,0.0,1,True,cakedao
+Kitty Finance,Algo-Stables,0.0,2,False,kitty-finance
+SnowCatDAO,Reserve Currency,0.0,1,True,snowcatdao
+AgarthaDAO,Reserve Currency,0.0,1,True,agarthadao
+Louverture,Yield,0.0,1,True,louverture
+Piggy Finance,Yield,0.0,1,True,piggy-finance
+MarginSwap,Dexs,0.0,4,False,marginswap
+Chikn Farm,Services,0.0,1,True,chikn-farm
+Karma DAO,Reserve Currency,0.0,1,True,karma-dao
+Poolz Vesting,Launchpad,0.0,11,False,poolz-vesting

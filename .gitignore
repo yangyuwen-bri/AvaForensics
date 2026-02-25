@@ -1,0 +1,19 @@
+# ── 密钥 & 凭证（绝对不能上传）──────────────────────
+*.json
+!package.json
+
+# ── 原始时序数据（数量多、体积大，用 DVC 或 Release 托管）─
+avax_data/tvl_*.csv
+avax_data/price_*.csv
+
+# ── Python 缓存 ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+
+# ── macOS ────────────────────────────────────────────
+.DS_Store
+
+# ── Jupyter ──────────────────────────────────────────
+.ipynb_checkpoints/

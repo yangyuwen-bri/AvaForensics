@@ -1,0 +1,429 @@
+name,category,tvl_usd,num_chains,avax_only,slug,label
+Aave V3,Lending,25143080097.922592,20,False,aave-v3,alive
+Pendle,Yield,2277133745.3179574,11,False,pendle,alive
+Curve DEX,Dexs,1858635062.2138011,30,False,curve-dex,alive
+Spark Liquidity Layer,Onchain Capital Allocator,1780527779.8182218,6,False,spark-liquidity-layer,alive
+Uniswap V3,Dexs,1480845077.5278234,41,False,uniswap-v3,alive
+Spark Savings,Yield,1284506778.957158,6,False,spark-savings,alive
+Uniswap V2,Dexs,844078753.2030617,12,False,uniswap-v2,alive
+Uniswap V4,Dexs,617228841.8684316,15,False,uniswap-v4,alive
+Euler V2,Lending,501334676.6838982,16,False,euler-v2,alive
+Tornado Cash,Privacy,462015997.91095126,8,False,tornado-cash,alive
+MEV Capital,Risk Curators,306421081.3126577,11,False,mev-capital,alive
+Upshift,Onchain Capital Allocator,303451306.47131544,11,False,upshift,alive
+GMX V2 Perps,Derivatives,246519891.57879117,3,False,gmx-v2-perps,alive
+K3 Capital,Risk Curators,242165807.37496045,7,False,k3-capital,alive
+Multipli.fi,Yield,232379262.5082659,4,False,multipli.fi,alive
+Benqi Staked Avax,Liquid Staking,199189785.3484579,1,True,benqi-staked-avax,alive
+PinkSale,Launchpad,168036459.65198588,6,False,pinksale,alive
+Treehouse Protocol,DOR,148778388.3030563,3,False,treehouse-protocol,alive
+Stake DAO,Yield,144526125.97842327,10,False,stake-dao,alive
+Beefy,Yield Aggregator,138660544.7010144,40,False,beefy,alive
+Benqi Lending,Lending,135075306.31723237,1,True,benqi-lending,alive
+Aave V2,Lending,128400452.2986812,3,False,aave-v2,alive
+UNCX Network V2,Token Locker,116053798.11990093,7,False,uncx-network-v2,alive
+Avant avUSD,Basis Trading,110344124.1656371,1,True,avant-avusd,alive
+Homora V2,Leveraged Farming,110273717.07445696,5,False,homora-v2,alive
+Aura,Yield,106721087.07122216,9,False,aura,alive
+Lagoon,Onchain Capital Allocator,105167708.26240604,16,False,lagoon,alive
+Re7 Labs,Risk Curators,102485081.05190995,15,False,re7-labs,alive
+Balancer V3,Dexs,94985074.0268724,8,False,balancer-v3,alive
+Balancer V2,Dexs,74319786.67742397,9,False,balancer-v2,alive
+SushiSwap V3,Dexs,65485476.46827308,29,False,sushiswap-v3,alive
+Thorchain DEX,Dexs,61558970.00572322,12,False,thorchain-dex,alive
+SushiSwap,Dexs,61441576.86929007,38,False,sushiswap,alive
+ZEROBASE CeDeFi,Basis Trading,55107210.032843,7,False,zerobase-cedefi,alive
+Solv Strategies,Onchain Capital Allocator,51645388.15789958,5,False,solv-strategies,alive
+Tulipa Capital,Risk Curators,50203503.87218164,8,False,tulipa-capital,alive
+Silo V2,Lending,47275230.58149349,4,False,silo-v2,alive
+Team Finance,Token Locker,45925799.447291456,17,False,team-finance,alive
+Blackhole CLMM,Dexs,45052175.7748898,1,True,blackhole-clmm,alive
+IPOR Fusion,Yield Aggregator,39984056.171783,8,False,ipor-fusion,alive
+Superform,Yield Aggregator,36136652.54741128,10,False,superform,alive
+YieldFi,Yield Aggregator,33276325.698705867,13,False,yieldfi,alive
+Vesper,Yield Aggregator,33104068.93916657,5,False,vesper,alive
+Spectra V2,Yield,31471774.908699427,12,False,spectra-v2,alive
+Joe V2.2,Dexs,31386076.676309288,3,False,joe-v2.2,alive
+vfat.io,Yield Aggregator,30538872.28649701,18,False,vfat.io,alive
+Steer Protocol,Liquidity manager,27369395.71659911,42,False,steer-protocol,alive
+Pharaoh V3,Dexs,27287291.235263366,1,True,pharaoh-v3,alive
+DxSale,Launchpad,26013965.826960266,22,False,dxsale,alive
+40 Acres,Lending,21500891.07023524,3,False,40-acres,alive
+XSY,Basis Trading,20971420.21447211,1,True,xsy,alive
+Hypha,Liquid Staking,20250295.026091944,1,True,hypha,alive
+Ankr,Liquid Staking,20034458.61237419,8,False,ankr,alive
+Contango V2,Derivatives,15848577.373605926,10,False,contango-v2,alive
+DODO AMM,Dexs,15657537.22713644,15,False,dodo-amm,alive
+TermFinance Vaults,Yield,15277384.4590809,6,False,termfinance-vaults,alive
+Yield Yak Aggregator,Yield Aggregator,15144807.558932956,3,False,yield-yak-aggregator,alive
+Folks Finance xChain,Lending,14571169.006450372,8,False,folks-finance-xchain,alive
+Frax Swap,Dexs,13928689.609821543,10,False,frax-swap,alive
+Joe DEX,Dexs,13242065.21635303,4,False,joe-dex,alive
+FlokiFi Locker,Token Locker,10689563.96125526,15,False,flokifi-locker,alive
+ACryptoS,Liquidity manager,10561955.547775736,17,False,acryptos,alive
+Abracadabra Spell,CDP,10453153.076895926,8,False,abracadabra-spell,alive
+MUX Perps,Derivatives,8857588.778951995,5,False,mux-perps,alive
+BiFi,Lending,8363610.101144635,5,False,bifi,alive
+Bitbond Lockers,Token Locker,7806717.984820917,7,False,bitbond-lockers,alive
+Royco V2,Yield,7560538.027076767,2,False,royco-v2,alive
+Turtle Club,Onchain Capital Allocator,6702653.710669225,3,False,turtle-club,alive
+WOOFi Earn,Yield,6299400.090505236,9,False,woofi-earn,alive
+Keyring,Risk Curators,6224494.751305107,1,True,keyring,alive
+Blackhole AMM,Dexs,6188615.945033834,1,True,blackhole-amm,alive
+Balanced Exchange,Dexs,6000499.164253278,11,False,balanced-exchange,alive
+Avant avBTC,Onchain Capital Allocator,5905061.831239332,1,True,avant-avbtc,alive
+Pharaoh CL,Dexs,5836584.474135806,1,True,pharaoh-cl,alive
+WOOFi Swap,Dexs,5655714.560720462,16,False,woofi-swap,alive
+Autofarm,Yield Aggregator,5584560.879882226,20,False,autofarm,alive
+Angle,CDP,5402562.27681658,8,False,angle,alive
+Gamma,Liquidity manager,4492995.087901323,36,False,gamma,alive
+DeltaPrime,Leveraged Farming,4163809.046833371,2,False,deltaprime,alive
+Sierra Protocol,Yield,3756259.180256767,1,True,sierra-protocol,alive
+Joe V2.1,Dexs,3703730.423893108,4,False,joe-v2.1,alive
+Pharaoh Legacy,Dexs,3556796.423749201,1,True,pharaoh-legacy,alive
+Parallel Protocol V3,CDP,3524589.909384744,5,False,parallel-protocol-v3,alive
+Ribbon,Options Vault,3426424.9862521365,4,False,ribbon,alive
+QiDao,CDP,3357650.5022502653,14,False,qidao,alive
+Wombat Exchange,Dexs,3288428.5750164785,7,False,wombat-exchange,alive
+GMX V1 Perps,Derivatives,3080661.136577141,2,False,gmx-v1-perps,alive
+Ploutos Money,Lending,3004837.355651922,9,False,ploutos-money,alive
+Guru Network Classic,Yield,2992844.222260306,10,False,guru-network-classic,alive
+Sushi BentoBox,Yield,2910360.6516375435,9,False,sushi-bentobox,alive
+Dexalot DEX,Dexs,2780748.7419498083,5,False,dexalot-dex,alive
+CORE Bridge,Canonical Bridge,2569066.131170624,7,False,core-bridge,alive
+EmpireDEX,Dexs,2494882.734268723,9,False,empiredex,alive
+Joe Lend,Lending,2329079.365180089,1,True,joe-lend,alive
+Arena DEX,Dexs,1877093.5069936896,1,True,arena-dex,alive
+OmniBTC,Lending,1864246.9500507351,8,False,omnibtc,alive
+Gyroscope Protocol,Dexs,1808656.589877135,10,False,gyroscope-protocol,alive
+Gro,Yield,1782520.445452371,2,False,gro,alive
+Pangolin V2,Dexs,1748389.4744693,4,False,pangolin-v2,alive
+Stable Jack V1,Yield,1512012.5988234356,1,True,stable-jack-v1,alive
+ApeX Pro,Derivatives,1431820.0826897186,7,False,apex-pro,alive
+Suzaku,Restaking,1382774.6675385237,1,True,suzaku,alive
+Bridgers,Dexs,1181639.9428078297,16,False,bridgers,alive
+TermFinance Lend,Lending,1175287.8437284671,4,False,termfinance-lend,alive
+CIAN Automation,Yield,1042654.6499423918,3,False,cian-automation,alive
+dForce Lending,Lending,1034843.2307136687,8,False,dforce-lending,alive
+KyberSwap Classic,Dexs,1029819.2161995844,15,False,kyberswap-classic,alive
+PumpSpace,Dexs,999966.568591949,1,True,pumpspace,alive
+Kine Finance,Yield,971975.006455426,4,False,kine-finance,alive
+Thetanuts Finance,Yield,933362.1430634124,11,False,thetanuts-finance,alive
+Opyn Gamma,Options,891913.8780493033,3,False,opyn-gamma,alive
+DefiEdge,Liquidity manager,878329.8333478232,14,False,defiedge,alive
+Impermax V2,Lending,812379.6685747826,15,False,impermax-v2,alive
+GMD Protocol,Yield Aggregator,800617.8409714673,2,False,gmd-protocol,alive
+Pharaoh V3 Legacy,Dexs,793729.1014930023,1,True,pharaoh-v3-legacy,alive
+Phuture,Indexes,792708.7073193672,2,False,phuture,alive
+PoolTogether V4,Yield Lottery,753815.4743596639,4,False,pooltogether-v4,alive
+Mint Club V2,Launchpad,735319.0320676652,13,False,mint-club-v2,alive
+AquaBank,Yield,713874.9153646023,1,True,aquabank,alive
+Clearpool Lending,Uncollateralized Lending,629285.0422545256,9,False,clearpool-lending,alive
+Umami Finance,Yield,617492.8628898079,2,False,umami-finance,alive
+Ajna V2,Lending,591703.0441458131,13,False,ajna-v2,alive
+Hashflow,DEX Aggregator,576679.8294396861,6,False,hashflow,alive
+Tarot,Lending,566426.6099449473,13,False,tarot,alive
+BIM,Yield Aggregator,518955.4362124845,12,False,bim,alive
+Beta Finance V1,Lending,508033.0783621677,2,False,beta-finance-v1,alive
+RadioShack,Dexs,475682.2235927996,8,False,radioshack,alive
+Secured Finance Lending,Lending,442113.91737197735,5,False,secured-finance-lending,alive
+Yield Yak Staked Avax,Liquid Staking,440093.5085915282,1,True,yield-yak-staked-avax,alive
+Geode,Liquid Staking,436930.47044534486,1,True,geode,alive
+Antfarm finance,Liquidity manager,434433.1288966215,4,False,antfarm-finance,alive
+Cytonic Airdrop Campaign,Farm,407820.002367697,11,False,cytonic-airdrop-campaign,alive
+VaporDex V1,Dexs,397014.5316389227,3,False,vapordex-v1,alive
+FortiFi,Yield Aggregator,395702.168790151,1,True,fortifi,alive
+88mph,Lending,383801.7979927593,4,False,88mph,alive
+Ante Finance,Insurance,380979.1958738071,8,False,ante-finance,alive
+Prime Protocol,Lending,366012.462679929,9,False,prime-protocol,alive
+Pangolin V3,Dexs,362064.6311401191,2,False,pangolin-v3,alive
+Salvor,NFT Marketplace,350619.86925307586,1,True,salvor,alive
+Iron Finance,CDP,315969.83359933336,3,False,iron-finance,alive
+Jarvis Network,Derivatives,296223.43496704235,6,False,jarvis-network,alive
+Snowball,Yield,295577.7783308485,1,True,snowball,alive
+Napier,Yield,284158.18613172387,11,False,napier,alive
+Clovis,Yield Aggregator,282946.8739003367,10,False,clovis,alive
+Sushi Trident,Dexs,274513.6762576784,8,False,sushi-trident,alive
+Diamondswap,Dexs,268605.7624002319,5,False,diamondswap,alive
+Dyson,Liquidity manager,258222.2526639757,7,False,dyson,alive
+SeaFi,Yield,237497.11984386755,1,True,seafi,alive
+OnX Finance,Yield Aggregator,235049.08618854667,4,False,onx-finance,alive
+Voltz,Derivatives,232871.09790520143,3,False,voltz,alive
+Elk,Dexs,219033.54747551776,31,False,elk,alive
+Iron Bank,Lending,209126.220699956,4,False,iron-bank,alive
+OpenOcean,DEX Aggregator,184971.75876972405,8,False,openocean,alive
+Arena SocialFi,SoFi,183271.10163712213,1,True,arena-socialfi,alive
+Balmy,DCA Tools,182513.4124060628,10,False,balmy,alive
+Impossible Finance,Launchpad,177594.1447848628,7,False,impossible-finance,alive
+Joe V2,Dexs,157462.89640783146,3,False,joe-v2,alive
+Granary Finance,Lending,152886.80558936234,8,False,granary-finance,alive
+Xave Finance,Dexs,150000.58057916194,3,False,xave-finance,alive
+Float,Derivatives,144357.96676461876,2,False,float,alive
+Sushi Kashi,Lending,142338.75279725032,5,False,sushi-kashi,alive
+Varlamore Capital,Risk Curators,140175.93498715456,4,False,varlamore-capital,alive
+Nested,Indexes,136587.85503253771,6,False,nested,alive
+InsurAce,Insurance,133820.602679136,4,False,insurace,alive
+Cook Finance,Indexes,127049.55868304944,4,False,cook-finance,alive
+Colony,Yield,119967.68626185044,1,True,colony,alive
+KyberSwap Elastic,Dexs,118495.17098592909,11,False,kyberswap-elastic,alive
+Domani Protocol,Indexes,92632.87760844931,3,False,domani-protocol,alive
+xDollar,CDP,90959.24301234906,5,False,xdollar,alive
+Olive Cash,Yield,88887.16712831978,3,False,olive-cash,alive
+Revest Finance,NFT Lending,84907.49540036009,6,False,revest-finance,alive
+Penguin Finance,Yield,83835.61581404421,1,True,penguin-finance,alive
+Defrost,CDP,81194.4452897324,1,True,defrost,alive
+Hubble Exchange,Derivatives,78174.96242874769,1,True,hubble-exchange,alive
+StoneDefi,Yield Aggregator,70362.5873794079,4,False,stonedefi,alive
+Nereus Finance,Lending,69906.68773555508,1,True,nereus-finance,alive
+Token Mill,Launchpad,64222.777577191584,2,False,token-mill,alive
+YieldWolf,Yield,62236.73132328156,7,False,yieldwolf,alive
+Bitbond Sales,Launchpad,62056.382781629785,7,False,bitbond-sales,alive
+SteakHut Liquidity,Liquidity manager,61120.98415324264,2,False,steakhut-liquidity,alive
+OrderNChaos,Algo-Stables,60561.22521166142,5,False,ordernchaos,alive
+GOLDSTATION DEX V3,Dexs,59753.97031089614,1,True,goldstation-dex-v3,alive
+Complus Network,Dexs,59606.86142179919,4,False,complus-network,alive
+Oddz,Options,59187.07788393579,2,False,oddz,alive
+HunnySwap,Dexs,58357.12306246721,1,True,hunnyswap,alive
+Definitive Yield Vaults,Yield,51961.50049403968,6,False,definitive-yield-vaults,alive
+Frost Finance,Yield,51726.89397210548,1,True,frost-finance,alive
+Stable Jack V2,Yield,48814.09547274661,3,False,stable-jack-v2,alive
+Flair Dex,Dexs,48761.33503893331,1,True,flair-dex,alive
+Lydia,Dexs,47543.65383435842,1,True,lydia,alive
+Platypus Finance,Dexs,45788.56830237808,1,True,platypus-finance,alive
+CougarSwap,Yield,42613.588885870486,8,False,cougarswap,alive
+HurricaneSwap,Dexs,38853.37863906148,1,True,hurricaneswap,alive
+ChainGPT,Launchpad,38782.709102897774,10,False,chaingpt,alive
+Risk Harbor,Insurance,38751.77918839415,9,False,risk-harbor,alive
+Axial,Dexs,37082.68866858547,1,True,axial,alive
+BXH,Dexs,36929.60018974437,5,False,bxh,alive
+HedgeFarm,Yield,36360.84775581577,1,True,hedgefarm,alive
+EulerDebt,Secondary Debt Markets,36150.47574611403,5,False,eulerdebt,alive
+WOWswap,Dexs,35222.72784695939,8,False,wowswap,alive
+Poolside,Dexs,34953.96322513978,4,False,poolside,alive
+0.exchange,Dexs,34319.633082868626,3,False,0.exchange,alive
+Button Wrappers,CDP,33873.14330593075,4,False,button-wrappers,alive
+EmiSwap,Dexs,33547.83805005922,7,False,emiswap,alive
+DexPad,Launchpad,33173.74440125058,4,False,dexpad,alive
+KEWL EXCHANGE,Dexs,32284.667473584865,6,False,kewl-exchange,alive
+Tranche Finance,Yield,32118.615421460407,4,False,tranche-finance,alive
+Joe Stek,Farm,32006.07918673796,1,True,joe-stek,alive
+Kalmy App,Yield,31998.38636459183,3,False,kalmy-app,alive
+PyreSwap,Dexs,31416.908118789757,3,False,pyreswap,alive
+Fractal Protocol,Yield,31368.10654972082,4,False,fractal-protocol,alive
+Excellion Finance,Risk Curators,29711.560372508608,1,True,excellion-finance,alive
+Mushrooms Finance,Yield Aggregator,27608.906996568625,5,False,mushrooms-finance,alive
+Grim Finance,Yield,27121.68857634969,6,False,grim-finance,alive
+Arena Launch,Launchpad,26857.721827368317,1,True,arena-launch,alive
+Omni Exchange V3,Dexs,25711.39717744724,7,False,omni-exchange-v3,alive
+Canary,Dexs,25615.78092411902,2,False,canary,alive
+Swapsicle V1,Dexs,25001.893189385053,8,False,swapsicle-v1,alive
+HakuSwap,Dexs,24919.93460443492,1,True,hakuswap,alive
+CreateMyToken,Launchpad,24298.160993156085,8,False,createmytoken,alive
+Vector Finance,Yield,22397.357849619384,1,True,vector-finance,alive
+Growth DeFi,Yield,22285.378143753394,3,False,growth-defi,alive
+TopShelf,CDP,22198.923826861643,3,False,topshelf,alive
+Singular Farm,Yield,22107.01284300896,4,False,singular-farm,alive
+Cycle Finance,Yield Aggregator,21182.61454337336,1,True,cycle-finance,alive
+Waterfall DeFi,Yield Aggregator,19960.07568999296,2,False,waterfall-defi,alive
+Baguette,Dexs,19592.48292195686,1,True,baguette,alive
+Struct Finance,Yield,19348.04264363581,1,True,struct-finance,alive
+Stabilize,CDP,18996.607848837277,1,True,stabilize,alive
+Apex DeFi,Dexs,17642.055743845736,3,False,apex-defi,alive
+VaporDex V2,Dexs,17291.68702521279,3,False,vapordex-v2,alive
+Abacus,Governance Incentives,17124.646896851922,6,False,abacus,alive
+Gaj Finance,Yield,16734.358342280706,2,False,gaj-finance,alive
+Yel Finance,Yield,16322.561533085993,8,False,yel-finance,alive
+BooFinance,Yield,16089.157714047771,1,True,boofinance,alive
+Magic Square,Farm,15416.376319694657,5,False,magic-square,alive
+Coinscope,Token Locker,14398.63581255495,9,False,coinscope,alive
+dexVAULTS,Yield,14325.72807864996,8,False,dexvaults,alive
+Sherpa Cash,Privacy,13693.448682280574,1,True,sherpa-cash,alive
+Teddy Cash,CDP,13025.6893390298,1,True,teddy-cash,alive
+Vee Finance,Lending,12991.953713280096,2,False,vee-finance,alive
+FWX DEX,Dexs,12687.71011945438,2,False,fwx-dex,alive
+ThorusFi,Dexs,12657.906420689336,2,False,thorusfi,alive
+Aperture LM,Liquidity manager,12644.90378555354,2,False,aperture-lm,alive
+ETHA Lend,Yield,12101.863188788098,2,False,etha-lend,alive
+CavalRe,Dexs,11950.6451036066,1,True,cavalre,alive
+Antimatter,Options,11426.384085403351,5,False,antimatter,alive
+Kuu Finance,Dexs,11300.58012866533,1,True,kuu-finance,alive
+Stryke SSOV,Options,10712.490525740748,4,False,stryke-ssov,alive
+OrcaDAO,Lending,9461.535014753736,1,True,orcadao,dead
+Banksy Farm,Yield,9355.30466363062,1,True,banksy-farm,dead
+SoliSnek Finance,Dexs,9217.002947201929,1,True,solisnek-finance,dead
+YetiSwap,Dexs,8976.993309325379,1,True,yetiswap,dead
+StormSwap,Yield,8807.415337101043,2,False,stormswap,dead
+Embr Finance,Dexs,8693.922566445654,1,True,embr-finance,dead
+Glacier Exchange V2,Dexs,8523.10553720076,1,True,glacier-exchange-v2,dead
+Spice Trade,Algo-Stables,8223.877784582794,4,False,spice-trade,dead
+Magik Farm,Yield Aggregator,7753.738121695264,12,False,magik-farm,dead
+Moremoney,Lending,7483.856979152742,1,True,moremoney,dead
+Mozaic,Yield,7458.320940512892,6,False,mozaic,dead
+Brokkr Finance,Indexes,7048.59407831309,2,False,brokkr-finance,dead
+Omni Exchange V2,Dexs,6765.2851688268975,7,False,omni-exchange-v2,dead
+Alligator,Dexs,6579.781201844235,1,True,alligator,dead
+Baklava Space,Yield,6422.384635004974,4,False,baklava-space,dead
+UNO farm,Yield Aggregator,6322.31350000313,4,False,uno-farm,dead
+Baki,CDP,5967.765172936924,1,True,baki,dead
+Native Swap,Dexs,5642.9692162544825,9,False,native-swap,dead
+Zabu Finance,Yield Aggregator,5491.714656374035,1,True,zabu-finance,dead
+Nord Finance,Yield Aggregator,4876.237675716038,3,False,nord-finance,dead
+DexFinance ETF,Yield,4681.8672588954805,8,False,dexfinance-etf,dead
+Monroe Protocol,CDP,4672.21585036381,3,False,monroe-protocol,dead
+dripit,Prediction Market,4292.529563723135,1,True,dripit,dead
+PartySwap,Dexs,4256.282841054766,1,True,partyswap,dead
+Robo-Vault,Yield,4123.189577476645,2,False,robo-vault,dead
+Avalps,Reserve Currency,4107.417331537986,1,True,avalps,dead
+ElasticSwap,Dexs,4104.857526865814,2,False,elasticswap,dead
+Envelop,NftFi,3629.568649862508,7,False,envelop,dead
+The Ennead Farm,Yield,3515.0861973795336,2,False,the-ennead-farm,dead
+Leech Protocol,Yield Aggregator,3501.5349403954774,3,False,leech-protocol,dead
+UniFi,Dexs,3422.142237228837,10,False,unifi,dead
+CryptoYieldFocus,Farm,3377.753934717836,1,True,cryptoyieldfocus,dead
+Oh Finance,Yield,3032.719759596831,4,False,oh-finance,dead
+GoldLink,Leveraged Farming,3031.23998253702,2,False,goldlink,dead
+Atlantis Loans,Lending,2902.308326751569,4,False,atlantis-loans,dead
+StackFi,Lending,2801.3344768378324,2,False,stackfi,dead
+SoulSwap,Dexs,2622.3193057617714,2,False,soulswap,dead
+Blizzard,Yield,2535.9890248215,1,True,blizzard,dead
+2Pi Network,Yield,2390.645429893856,4,False,2pi-network,dead
+Glacier Exchange V3,Dexs,2290.247661977955,1,True,glacier-exchange-v3,dead
+FWX Derivatives,Derivatives,2238.418352180334,3,False,fwx-derivatives,dead
+Subzero ZSwap,Dexs,2093.9485485083915,1,True,subzero-zswap,dead
+SpiritDAO,Reserve Currency,2003.927571307616,1,True,spiritdao,dead
+Archly V2,Dexs,1957.9776351609348,22,False,archly-v2,dead
+The Seed Farm,Yield,1838.7940897253964,1,True,the-seed-farm,dead
+WhaleSwap,Dexs,1568.0957932845477,7,False,whaleswap,dead
+Ara Finance,Reserve Currency,1482.6808846521478,1,True,ara-finance,dead
+printyfinance,Dexs,1281.3931590914524,1,True,printyfinance,dead
+MintSwap,Farm,1158.8953884093328,1,True,mintswap,dead
+FerdyFlip,Luck Games,1155.323341548925,3,False,ferdyflip,dead
+Symphony Finance,Dexs,853.5201727636577,3,False,symphony-finance,dead
+Sierra,Reserve Currency,842.252923323465,1,True,sierra,dead
+Kassandra DAO,Indexes,817.9173257460975,2,False,kassandra-dao,dead
+PirateDAO,Reserve Currency,796.6251838230373,1,True,piratedao,dead
+Kayak V2,Dexs,788.8841374074888,2,False,kayak-v2,dead
+Swift Finance,Yield,765.7039420269725,1,True,swift-finance,dead
+Omni Exchange Flux,Dexs,690.5783657903497,7,False,omni-exchange-flux,dead
+North Pole,CDP,689.3610021477909,1,True,north-pole,dead
+Hot Takes,SoFi,563.5746666779265,1,True,hot-takes,dead
+Steadefi,Leveraged Farming,544.6862343048522,2,False,steadefi,dead
+Defi Yield Protocol,Yield,515.7205679831766,3,False,defi-yield-protocol,dead
+VaultLayer,Liquid Staking,479.1705438068944,9,False,vaultlayer,dead
+DefiCurrent,Yield Aggregator,423.7115008586934,3,False,deficurrent,dead
+Grave Finance,Algo-Stables,383.30285733971664,1,True,grave-finance,dead
+onAVAX,Dexs,331.52330139434974,1,True,onavax,dead
+Augmented Finance,Lending,326.65169644014406,4,False,augmented-finance,dead
+Spicy DAO,Reserve Currency,270.7656155124651,1,True,spicy-dao,dead
+Return Finance,Yield Aggregator,256.72394464333433,4,False,return-finance,dead
+Monocerus,Dexs,201.23446457730452,2,False,monocerus,dead
+Incognito,Dexs,137.11909395807544,5,False,incognito,dead
+Avaware,Yield,133.73805841975928,1,True,avaware,dead
+Aboard Exchange,Derivatives,120.93422545635288,8,False,aboard-exchange,dead
+FlashLiquidity,Dexs,89.58999976466035,5,False,flashliquidity,dead
+SecondSwap,OTC Marketplace,86.00215798511225,3,False,secondswap,dead
+The Dragon's Lair,Yield,73.44836880040911,1,True,the-dragons-lair,dead
+ApexSwap,Dexs,69.73821669376733,1,True,apexswap,dead
+Life DAO,Reserve Currency,67.38702541355721,1,True,life-dao,dead
+Gondola Finance,Dexs,66.02914332990972,1,True,gondola-finance,dead
+Tarina,Dexs,51.45983524342172,1,True,tarina,dead
+Amogus DAO,Reserve Currency,44.33225962549005,1,True,amogus-dao,dead
+AvaViking,Yield,41.58082166669896,1,True,avaviking,dead
+Securo Finance,Indexes,34.0,4,False,securo-finance,dead
+TreeHouse Finance,Yield,29.06203942303773,1,True,treehouse-finance,dead
+RubyDex,Derivatives,24.13359619371612,10,False,rubydex,dead
+Genius,Yield,22.21410473647097,5,False,genius,dead
+Butterfly Finance,Farm,17.059378259994137,1,True,butterfly-finance,dead
+Reservoir,Dexs,16.01314342736549,1,True,reservoir,dead
+NoahArkDAO,Reserve Currency,15.53803576514076,1,True,noaharkdao,dead
+Coup Farm,Yield,15.15290954025074,1,True,coup-farm,dead
+ReHold V2,Yield,14.374819886623175,9,False,rehold-v2,dead
+Crypto Lottery,Luck Games,10.569773320622629,6,False,crypto-lottery,dead
+FutureSwap,Derivatives,9.748698779786489,3,False,futureswap,dead
+Papa DAO,Reserve Currency,7.20208788232565,1,True,papa-dao,dead
+Tornadao,Reserve Currency,6.694802850296311,1,True,tornadao,dead
+Crocodile Finance,Algo-Stables,4.865904569002782,1,True,crocodile-finance,dead
+Gaia DAO,Reserve Currency,4.806608170193802,1,True,gaia-dao,dead
+DumpEX,Farm,4.599869631364849,11,False,dumpex,dead
+TempoDAO,Reserve Currency,3.358851089391962,1,True,tempodao,dead
+Multi-Chain Miner,Ponzi,2.9095417767965,4,False,multi-chain-miner,dead
+BayMax,Derivatives,2.527025979528775,1,True,baymax,dead
+ZKEX,Dexs,2.048684967529911,9,False,zkex,dead
+SashimiDAO,Reserve Currency,1.442948935326536,1,True,sashimidao,dead
+DONASWAP V2,Dexs,1.0180186883660742,29,False,donaswap-v2,dead
+NODO,Prediction Market,0.8452719683352007,5,False,nodo,dead
+Vacus Finance,Yield Aggregator,0.8178986429013764,1,True,vacus-finance,dead
+Magnet DAO,Algo-Stables,0.6556692600864312,1,True,magnet-dao,dead
+Maximizer,Reserve Currency,0.4572793250069649,1,True,maximizer,dead
+DeepSeaDAO,Reserve Currency,0.4468463679033729,1,True,deepseadao,dead
+Snowdog,Reserve Currency,0.2915706915267717,1,True,snowdog,dead
+ReHold V1,Yield,0.1403130814541358,6,False,rehold-v1,dead
+Lama Miner,Ponzi,0.0996058602786811,1,True,lama-miner,dead
+Meow Miner,Ponzi,0.0324896891183138,1,True,meow-miner,dead
+Swing DAO,Reserve Currency,0.02068893345117,1,True,swing-dao,dead
+Cables Finance,Dexs,2.418160918597672e-05,2,False,cables-finance,dead
+ValhallaDAO,Reserve Currency,1.7208266877309225e-05,1,True,valhalladao,dead
+ZeroShift,Reserve Currency,1.623399170646282e-11,1,True,zeroshift,dead
+Piggybank DAO,Reserve Currency,6.6806942100000015e-16,1,True,piggybank-dao,dead
+TokensFarm,Yield,0.0,7,False,tokensfarm,dead
+Grape Finance,Algo-Stables,0.0,1,True,grape-finance,dead
+Cesta Finance,Reserve Currency,0.0,1,True,cesta-finance,dead
+Snowtomb,Algo-Stables,0.0,1,True,snowtomb,dead
+IceCream Finance,Algo-Stables,0.0,1,True,icecream-finance,dead
+Ripae,Algo-Stables,0.0,7,False,ripae,dead
+ProjectX,Yield,0.0,1,True,projectx,dead
+Thor Financial,Yield,0.0,1,True,thor-financial,dead
+VaporFi,Yield,0.0,1,True,vaporfi,dead
+Arable Protocol,Synthetics,0.0,1,True,arable-protocol,dead
+Volta DAO,Reserve Currency,0.0,2,False,volta-dao,dead
+Snowyowl,Algo-Stables,0.0,1,True,snowyowl,dead
+Echidna Finance,Yield,0.0,1,True,echidna-finance,dead
+Polar Bear Finance,Algo-Stables,0.0,1,True,polar-bear-finance,dead
+Yeti Finance,CDP,0.0,1,True,yeti-finance,dead
+0x NODES,Yield Aggregator,0.0,6,False,0x-nodes,dead
+SteakHut,Farm,0.0,1,True,steakhut,dead
+ZeroSwap,Dexs,0.0,4,False,zeroswap,dead
+Frozen Walrus Finance,Algo-Stables,0.0,1,True,frozen-walrus-finance,dead
+BetSwirl,Prediction Market,0.0,6,False,betswirl,dead
+CryptoBlades,Gaming,0.0,7,False,cryptoblades,dead
+Wolf Safe Poor People,Yield,0.0,4,False,wolf-safe-poor-people,dead
+Champion Finance,Algo-Stables,0.0,1,True,champion-finance,dead
+EMDX,Derivatives,0.0,1,True,emdx,dead
+Freebie Life Finance,Yield Lottery,0.0,1,True,freebie-life-finance,dead
+Subzero+,Reserve Currency,0.0,1,True,subzero+,dead
+Dypius,Yield,0.0,3,False,dypius,dead
+Vertex Perps,Derivatives,0.0,7,False,vertex-perps,dead
+Arrow Markets,Options,0.0,1,True,arrow-markets,dead
+Cleopatra DAO,Yield Aggregator,0.0,1,True,cleopatra-dao,dead
+Kandyland Finance,Reserve Currency,0.0,1,True,kandyland-finance,dead
+Hermes Finance,Algo-Stables,0.0,1,True,hermes-finance,dead
+Crabada,Gaming,0.0,1,True,crabada,dead
+Anchor,Lending,0.0,2,False,anchor,dead
+Zookeeper,Yield,0.0,2,False,zookeeper,dead
+Avalaunch,Dexs,0.0,1,True,avalaunch,dead
+Volta Club,Reserve Currency,0.0,2,False,volta-club,dead
+Ramp,CDP,0.0,4,False,ramp,dead
+SmartCoin,Yield,0.0,1,True,smartcoin,dead
+Snowbank,Reserve Currency,0.0,1,True,snowbank,dead
+Blizz Finance,Lending,0.0,1,True,blizz-finance,dead
+EverestDAO,DAO Service Provider,0.0,1,True,everestdao,dead
+Fortress,Reserve Currency,0.0,1,True,fortress,dead
+R U Generous,Reserve Currency,0.0,1,True,r-u-generous,dead
+VikingsFinance,Reserve Currency,0.0,1,True,vikingsfinance,dead
+GalaxyGoogle DAO,Reserve Currency,0.0,2,False,galaxygoogle-dao,dead
+HoneyFarm,Yield,0.0,2,False,honeyfarm,dead
+MidasDAO,Reserve Currency,0.0,1,True,midasdao,dead
+O2 DAO,Reserve Currency,0.0,1,True,o2-dao,dead
+Ice DAO,Reserve Currency,0.0,1,True,ice-dao,dead
+RagnarokDAO,Reserve Currency,0.0,1,True,ragnarokdao,dead
+Vortex DAO,Reserve Currency,0.0,1,True,vortex-dao,dead
+CakeDAO,Reserve Currency,0.0,1,True,cakedao,dead
+Kitty Finance,Algo-Stables,0.0,2,False,kitty-finance,dead
+SnowCatDAO,Reserve Currency,0.0,1,True,snowcatdao,dead
+AgarthaDAO,Reserve Currency,0.0,1,True,agarthadao,dead
+Louverture,Yield,0.0,1,True,louverture,dead
+Piggy Finance,Yield,0.0,1,True,piggy-finance,dead
+MarginSwap,Dexs,0.0,4,False,marginswap,dead
+Chikn Farm,Services,0.0,1,True,chikn-farm,dead
+Karma DAO,Reserve Currency,0.0,1,True,karma-dao,dead
+Poolz Vesting,Launchpad,0.0,11,False,poolz-vesting,dead
