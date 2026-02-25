@@ -3,7 +3,7 @@
 > **AI-driven risk intelligence for the Avalanche ecosystem.**  
 > Turning 170+ dead protocols into a living early warning system.
 
-[![Build Games 2026](https://img.shields.io/badge/Avalanche-Build%20Games%202026-E84142?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgMjBoMjBMMTIgMnoiLz48L3N2Zz4=)](https://build.avax.network)
+[![Build Games 2026](https://img.shields.io/badge/Avalanche-Build%20Games%202026-E84142?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgMjBoMjBMMTIgMnoiLz48L3N2Zz4=)](https://build.avax.network/build-games)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Data](https://img.shields.io/badge/Protocols%20Analyzed-422-00D4FF?style=flat-square)](#data)
 [![Model AUC](https://img.shields.io/badge/Baseline%20AUC-0.725-2ED573?style=flat-square)](#model)
