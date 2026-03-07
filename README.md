@@ -8,6 +8,8 @@
 [![Baseline AUC](https://img.shields.io/badge/Baseline%20AUC-0.738-2ED573?style=flat-square)](#model)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
+Live app: [avaforensics.streamlit.app](https://avaforensics.streamlit.app/)
+
 ## What It Is
 
 AvaForensics is a protocol health explorer for Avalanche. It learns from the historical TVL behavior of 422 protocols and assigns a health score to each protocol based on its first 90 days of TVL behavior.
@@ -145,6 +147,7 @@ streamlit run streamlit_app.py
 Open:
 
 - `http://localhost:8501`
+- [https://avaforensics.streamlit.app/](https://avaforensics.streamlit.app/)
 
 Optional environment setup for Avalanche live on-chain data:
 
