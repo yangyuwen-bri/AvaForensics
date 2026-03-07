@@ -10,6 +10,8 @@
 
 Live app: [avaforensics.streamlit.app](https://avaforensics.streamlit.app/)
 
+[![AvaForensics live app preview](docs/live_app_preview.png)](https://avaforensics.streamlit.app/)
+
 ## What It Is
 
 AvaForensics is a protocol health explorer for Avalanche. It learns from the historical TVL behavior of 422 protocols and assigns a health score to each protocol based on its first 90 days of TVL behavior.
