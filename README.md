@@ -1,11 +1,11 @@
 # AvaForensics
 
-> AI-driven protocol health scoring for the Avalanche ecosystem.
+> Avalanche protocol lifecycle analysis with early-risk scoring, AVAX footprint reading, and evidence-backed interpretation.
 
 [![Build Games 2026](https://img.shields.io/badge/Avalanche-Build%20Games%202026-E84142?style=flat-square)](https://build.avax.network/build-games)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Protocols](https://img.shields.io/badge/Protocols%20Scored-422-00D4FF?style=flat-square)](#dataset)
-[![Baseline AUC](https://img.shields.io/badge/Baseline%20AUC-0.738-2ED573?style=flat-square)](#model)
+[![Protocols Scored](https://img.shields.io/badge/Protocols%20Scored-415-00D4FF?style=flat-square)](#current-snapshot)
+[![Stage 1 AUC](https://img.shields.io/badge/Stage%201%20AUC-0.896-2ED573?style=flat-square)](#stage-1-early-risk-model)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 Live app: [avaforensics.streamlit.app](https://avaforensics.streamlit.app/)
@@ -14,34 +14,54 @@ Live app: [avaforensics.streamlit.app](https://avaforensics.streamlit.app/)
 
 ## What It Is
 
-AvaForensics is a protocol health explorer for Avalanche. It learns from the historical TVL behavior of 422 protocols and assigns a health score to each protocol based on its first 90 days of TVL behavior.
+AvaForensics is an **Avalanche protocol lifecycle analysis tool**.
 
-The current MVP includes:
+It does not try to be a contract auditing product or a rug-pull detector. Instead, it answers a different question:
 
-- A runnable Streamlit product UI
-- Baseline health scoring across 422 Avalanche protocols
-- Single-protocol inspection with TVL history and risk signals
-- Leaderboard and ecosystem-wide browsing
-- Live refresh from DeFiLlama for the selected protocol
-- Avalanche official on-chain enrichment through AvaCloud Glacier Data API when available
+**Given a protocol's early AVAX-side behavior and its current Avalanche footprint, what kind of lifecycle state does it look to be in now?**
+
+The current product combines four layers:
+
+- **Early Risk**: a Stage 1 model that scores whether a protocol's first 90 days of AVAX core TVL behavior look like later structural decay
+- **Current AVAX Footprint**: how much meaningful presence the protocol still has on Avalanche today
+- **Lifecycle Interpretation**: whether the protocol now looks more like terminal decay, multichain relocation, native revival, AVAX-side weakness, or no strong terminal signal
+- **Evidence Level**: how strongly that lifecycle interpretation is supported by Avalanche-specific address, methodology, or activity evidence
 
 ## Why It Exists
 
-Most Web3 tools answer contract-security questions such as "does this contract have an obvious backdoor?" AvaForensics answers a different question:
+Many Web3 tools answer questions like:
 
-`Is this protocol behaving like projects that later decay to near-zero TVL?`
+- does this contract have an obvious backdoor?
+- was the protocol exploited?
+- is the token price down?
 
-This makes it a protocol-health and decay-monitoring product, not a contract audit tool.
+AvaForensics is aimed at a different operational problem:
 
-## MVP Snapshot
+- is this protocol's AVAX-side lifecycle weakening?
+- is it actually dying, or just relocating cross-chain?
+- does it still have meaningful Avalanche presence?
 
-- `422` protocols scored from local research data
-- `249 alive / 179 dead` labels in the current protocol registry snapshot
-- `246 alive / 176 dead` protocols in the model-ready early-window dataset
-- Baseline Random Forest trained on first-90-day TVL features
-- Current cross-validated baseline: `AUC 0.738`, `Accuracy 0.709`
-- Price enrichment coverage: `89` protocols
-- Avalanche on-chain enrichment coverage: `13` protocols
+This makes AvaForensics closer to a lifecycle intelligence tool than a generic TVL dashboard.
+
+## Current Snapshot
+
+Current product state after `dataset v2` and `model v2`:
+
+- total protocols in registry: `428`
+- AVAX core-eligible protocols: `421`
+- currently scored, model-ready protocols in the product: `415`
+- not core eligible: `6`
+- data incomplete: `1`
+
+Current mode counts:
+
+- `terminal_global_decay = 176`
+- `resilient_or_unproven = 171`
+- `native_revival_or_threshold_boundary = 48`
+- `multichain_relocation = 18`
+- `avax_side_decay_but_globally_alive = 8`
+- `not_core_eligible = 6`
+- `data_incomplete = 1`
 
 ## Product Surfaces
 
@@ -49,93 +69,181 @@ This makes it a protocol-health and decay-monitoring product, not a contract aud
 
 For any selected protocol, the UI shows:
 
-- Health score and dead probability
-- Historical TVL chart
-- Top risk signals derived from early TVL behavior
-- A contrast case from the opposite side of the label set
-- Supporting context such as category, price coverage, and on-chain coverage
+- a summary bar with lifecycle interpretation and evidence level
+- an **Early Risk** card from the Stage 1 model
+- a **Lifecycle Interpretation** card from Stage 2 + evidence layer
+- an activation-adjusted AVAX core TVL history chart
+- early-window risk signals
+- optional live refresh and Avalanche on-chain context
 
 ### 2. Leaderboard
 
-The leaderboard lets users browse protocols by health score and current risk band.
+The leaderboard supports two reading modes:
 
-### 3. Live Refresh
+- **Early Risk Ranking**
+- **Lifecycle Interpretation**
 
-The live refresh layer supplements the baseline model with fresh data:
+This allows the product to be used either as:
 
-- Pulls the latest protocol TVL history from DeFiLlama
-- Recomputes a refreshed score for the selected protocol
-- Pulls live Avalanche chain summary data from AvaCloud Glacier when `GLACIER_API_KEY` is configured
+- an early-warning ranking tool
+- or a lifecycle scanning tool
 
-The live refresh layer is intentionally separated from the baseline model. The baseline remains reproducible from the local research dataset, while live refresh acts as a monitoring overlay.
+### 3. Method
 
-## Dataset
+The product includes a `Method` tab that explains:
 
-The current MVP is built on four main dataset layers:
+- what Stage 1 predicts
+- what Stage 2 means
+- what evidence level means
+- why a high early score does not automatically imply strong current AVAX health
 
-### Protocol Registry
+## Stage 1 Early-Risk Model
 
-`avax_data/protocols_labeled.csv`
+### What It Predicts
 
-- Protocol name, slug, category
-- Current TVL snapshot
-- `avax_only` flag
-- Current label: `alive` or `dead`
+Stage 1 does **not** predict open-ended final death.
 
-Current label rule:
+It predicts a bounded event:
 
-- `alive`: current TVL `>= 10,000 USD`
-- `dead`: current TVL `< 10,000 USD`
+**Will this protocol enter structural decay within the next 365 days, based only on its first 90 days of AVAX core TVL behavior?**
 
-### Raw TVL Histories
+This is the main model currently driving the product's score.
 
-`avax_data/tvl_{slug}.csv`
+### How the Product Score Is Computed
 
-- One historical TVL series per protocol
-- Used as the raw source for both model features and product charts
+The product computes:
 
-### Model Dataset
+- `dead_probability = stage1_terminal_prob`
+- `health_score = 100 * (1 - dead_probability)`
 
-`avax_data/early_features.csv`
+Current risk bands:
 
-- Feature table built from the first 90 days of each protocol's TVL history
-- Used to train the current baseline scoring model
+- `score >= 75` -> `Resilient Start`
+- `50 <= score < 75` -> `Mixed Start`
+- `score < 50` -> `Fragile Start`
 
-### Enrichment Datasets
+Important caveat:
 
-- `avax_data/combined_features.csv` for price/TVL divergence features
-- `avax_data/onchain_features.csv` for Avalanche on-chain activity features
+`Resilient Start` means **low Stage 1 terminal-decay risk from the early AVAX trajectory**. It does **not** automatically mean that the protocol is currently strong on Avalanche.
+
+### Validation
+
+The current best Stage 1 model is the retrained RandomForest:
+
+- training sample size: `282`
+- 5-fold CV AUC: `0.896`
+- OOF AUC: `0.888`
+- OOF Accuracy: `0.801`
+- OOF Brier: `0.131`
+
+Temporal holdout AUC:
+
+- `0.849`
+- `0.898`
+- `0.893`
+
+## Stage 2 Lifecycle Interpretation
+
+Stage 2 is **not** the primary risk score.
+
+It is an interpretation layer that helps explain what the protocol currently looks like, using:
+
+- current AVAX footprint
+- multichain context
+- mode classification
+- evidence layer outputs
+
+The current Stage 2 interpretation space includes:
+
+- `Terminal Decay`
+- `Likely Cross-Chain Relocation`
+- `Native Revival or Boundary Case`
+- `AVAX-Side Weakness`
+- `No Strong Terminal Signal`
+
+## Evidence Layer
+
+The evidence layer is one of the main recent upgrades in the project.
+
+It was added to stop treating relocation and revival as pure soft labels.
+
+Current evidence levels include:
+
+- `On-Chain Supported`
+- `Weak On-Chain Support`
+- `Address Registered`
+- `Methodology Backed`
+- `Threshold Only`
+- `Inference Only`
+- `Model Only`
+
+Current evidence posture:
+
+### Multichain Relocation
+
+All relocation cases are now covered by:
+
+- `Address Registered = 8`
+- `Methodology Backed = 10`
+
+### AVAX-Side Decay But Globally Alive
+
+All AVAX-side weakness cases are now covered by:
+
+- `Address Registered = 6`
+- `Methodology Backed = 2`
+
+### Native Revival or Boundary
+
+Native revival is now split across:
+
+- `Address Registered = 19`
+- `Methodology Backed = 19`
+- `Weak On-Chain Support = 6`
+- `On-Chain Supported = 2`
+- `Threshold Only = 2`
+
+This means native revival is no longer a single loose label. It is now a graded interpretation class.
+
+## Data Foundation
+
+The current product is built on `dataset v2`.
+
+Core assets live under:
+
+- `experiments/protocol_decay_lab/outputs/dataset_v2`
+- `experiments/protocol_decay_lab/outputs/model_v2`
+
+Important files:
+
+- `registry_v2.csv`
+- `labels_v2.csv`
+- `features_summary_v2.csv`
+- `early_features_v2.csv`
+- `product_schema_v2.csv`
+
+Key data ideas:
+
+- only AVAX core-eligible protocols can enter the main scoring universe
+- charts use activation-adjusted AVAX core history
+- Stage 1 uses early-window features only
+- Stage 2 uses current-state interpretation, not primary prediction
 
 ## Data Sources
 
 - [DeFiLlama API](https://defillama.com/docs/api): protocol metadata and TVL history
 - [AvaCloud Glacier Data API](https://developers.avacloud.io/data-api/overview): Avalanche C-Chain transaction, token, and address-level data
-- CoinGecko API: token price history for price-side enrichment
-
-## Model
-
-The current baseline model is intentionally narrow:
-
-- Model family: Random Forest
-- Prediction target: whether a protocol later behaves like the low-TVL/dead set
-- Input window: first 90 days of TVL history
-- Validation: 5-fold stratified cross validation
-
-Three of the most informative early signals are:
-
-- TVL peak timing
-- 90-day TVL retention
-- Second-half ratio
-
-This is a protocol-health baseline, not a full fraud, exploit, or rug-pull detection system.
+- CoinGecko API: optional price enrichment
+- Avalanche public RPC: address and live-code validation for evidence experiments
 
 ## Avalanche Tech Used
 
-Avalanche-specific usage in the current MVP:
+Avalanche-specific usage in the current product:
 
-- Avalanche protocol subset used as the core ecosystem focus
-- AvaCloud Glacier Data API integrated for live on-chain summaries
-- Avalanche contract and token addresses used to enrich selected protocol views
+- Avalanche core TVL histories are the main modeling substrate
+- Avalanche public RPC is used for address and live-code validation in the evidence layer
+- AvaCloud Glacier Data API is used for live on-chain summaries
+- Avalanche contract and address mapping are used to harden lifecycle interpretations
 
 ## Run Locally
 
@@ -158,63 +266,53 @@ cp .env.example .env
 # add GLACIER_API_KEY to .env
 ```
 
-Without `GLACIER_API_KEY`, the baseline product still works. Only the Avalanche live on-chain summary layer is unavailable.
-
-Data pipeline commands now live under `scripts/`:
-
-```bash
-python scripts/fetch_tvl_history.py
-python scripts/timeseries_features_model.py
-python scripts/coingecko_price_features.py
-python scripts/glacier_onchain_features.py
-```
+Without `GLACIER_API_KEY`, the product still works. Only the Avalanche live on-chain summary layer is unavailable.
 
 ## Repository Map
 
 ```text
 AvaForensics/
-├── avaforensics/                 # MVP backend helpers
-├── avax_data/                    # Local datasets and derived features
-├── scripts/                      # Data ingestion and feature engineering scripts
-│   ├── fetch_tvl_history.py
-│   ├── timeseries_features_model.py
-│   ├── coingecko_price_features.py
-│   └── glacier_onchain_features.py
-├── streamlit_app.py              # Product UI
+├── avaforensics/                 # product backend helpers
+├── avax_data/                    # legacy local data assets still used by parts of the app
+├── experiments/
+│   └── protocol_decay_lab/
+│       ├── src/                  # dataset v2, model v2, evidence-layer research scripts
+│       └── outputs/              # canonical v2 dataset and model outputs
+├── scripts/                      # older pipeline / ingestion entry points
+├── streamlit_app.py              # product UI
 ├── docs/
 │   ├── TECHNICAL_IMPLEMENTATION.md
+│   ├── DEPLOYMENT.md
 │   └── SUBMISSION_CHECKLIST.md
-├── requirements.txt
-└── README.md
+└── requirements.txt
 ```
 
 ## Technical Notes
 
-Technical implementation details are documented in [docs/TECHNICAL_IMPLEMENTATION.md](/Users/yuwen/AvaForensics/docs/TECHNICAL_IMPLEMENTATION.md).
+Detailed technical implementation notes are documented in [docs/TECHNICAL_IMPLEMENTATION.md](/Users/yuwen/AvaForensics/docs/TECHNICAL_IMPLEMENTATION.md).
 
-A submission-oriented checklist is documented in [docs/SUBMISSION_CHECKLIST.md](/Users/yuwen/AvaForensics/docs/SUBMISSION_CHECKLIST.md).
-
-Deployment instructions are documented in [docs/DEPLOYMENT.md](/Users/yuwen/AvaForensics/docs/DEPLOYMENT.md).
+Deployment notes are documented in [docs/DEPLOYMENT.md](/Users/yuwen/AvaForensics/docs/DEPLOYMENT.md).
 
 ## Current Limitations
 
-The current MVP is a strong first product version, but not yet a full production data platform.
+The product is substantially stronger than the first MVP, but it is still not a full production platform.
 
-- The protocol registry is derived primarily from DeFiLlama rather than a fully self-owned protocol registry
-- The label definition is still coarse and based on current TVL thresholding
-- Price enrichment covers only part of the protocol set
-- Avalanche on-chain enrichment is currently a smaller subset
-- Some feature distributions still need cleanup before production-grade risk scoring
+- Stage 1 is a bounded early-warning model, not a final destiny predictor
+- Stage 2 is an interpretation layer, not the primary risk score
+- not every lifecycle interpretation is fully on-chain proven
+- the protocol registry is still partially anchored to third-party sources
+- live on-chain enrichment still covers a smaller subset than the full scored universe
 
-## Next Direction
+## Current Product Read
 
-The next serious product phase is data infrastructure, not more UI polish:
+The cleanest way to interpret the product today is:
 
-- protocol registry cleanup
-- better status and label definitions
-- stronger Avalanche-native fact layer
-- multi-source validation
-- more reliable coverage for price and on-chain enrichment
+- **Stage 1** = early-warning risk model
+- **Current AVAX Footprint** = present Avalanche presence layer
+- **Stage 2** = lifecycle interpretation layer
+- **Evidence Level** = interpretation strength layer
+
+That separation is the core design choice of the current AvaForensics product.
 
 ## Build Games Context
 

@@ -27,13 +27,71 @@ def _load_state() -> Dict[str, object]:
         return load_app_state()
 
 
-def _load_leaderboard(state: Dict[str, object], band_filter: str, top_n: int) -> pd.DataFrame:
+def _load_leaderboard(state: Dict[str, object], band_filter: str, top_n: int, view_mode: str) -> pd.DataFrame:
+    if view_mode == "Lifecycle Interpretation":
+        frame = state["scored_protocols"].copy()
+        if band_filter != "All":
+            frame = frame[frame["risk_band"] == band_filter]
+        evidence_rank = {
+            "On-Chain Supported": 0,
+            "Address Registered": 1,
+            "Methodology Backed": 2,
+            "Weak On-Chain Support": 3,
+            "Threshold Only": 4,
+            "Inference Only": 5,
+            "Address Gap": 6,
+            "Address Mismatch": 7,
+            "Model Only": 8,
+        }
+        mode_rank = {
+            "Likely Cross-Chain Relocation": 0,
+            "Native Revival or Boundary Case": 1,
+            "AVAX-Side Weakness": 2,
+            "Terminal Decay": 3,
+            "No Strong Terminal Signal": 4,
+        }
+        frame["evidence_rank"] = frame["evidence_level_label"].map(evidence_rank).fillna(99)
+        frame["mode_rank"] = frame["decay_mode_label"].map(mode_rank).fillna(99)
+        frame = frame.sort_values(
+            ["mode_rank", "evidence_rank", "current_avax_share", "health_score"],
+            ascending=[True, True, False, False],
+        )
+        if top_n:
+            frame = frame.head(top_n)
+        table = frame[
+            [
+                "name",
+                "category",
+                "decay_mode_label",
+                "evidence_level_label",
+                "label",
+                "current_avax_share",
+                "current_avax_core_tvl",
+                "health_score",
+            ]
+        ].copy()
+        table["label"] = table["label"].map(lambda value: str(value).replace("_", " ").title() if pd.notna(value) else "Unknown")
+        table["current_avax_share"] = table["current_avax_share"].map(lambda v: f"{float(v) * 100:.2f}%" if pd.notna(v) else "N/A")
+        table["current_avax_core_tvl"] = table["current_avax_core_tvl"].map(lambda v: f"${float(v):,.0f}" if pd.notna(v) else "N/A")
+        return table.rename(
+            columns={
+                "name": "Protocol",
+                "category": "Category",
+                "decay_mode_label": "Lifecycle Interpretation",
+                "evidence_level_label": "Evidence Level",
+                "label": "Snapshot Status",
+                "current_avax_share": "AVAX Share",
+                "current_avax_core_tvl": "AVAX Core TVL",
+                "health_score": "Early Health Score",
+            }
+        )
+
     try:
         if band_filter == "All":
             leaderboard = get_leaderboard(state)
-        elif band_filter == "Healthy":
+        elif band_filter == "Resilient Start":
             leaderboard = get_leaderboard(state, alive_only=True)
-        elif band_filter == "High Risk":
+        elif band_filter == "Fragile Start":
             leaderboard = get_leaderboard(state, alive_only=False)
         else:
             leaderboard = get_leaderboard(state)
@@ -46,8 +104,8 @@ def _load_leaderboard(state: Dict[str, object], band_filter: str, top_n: int) ->
         return leaderboard
 
     if isinstance(leaderboard, pd.DataFrame):
-        if band_filter == "Watchlist" and "Risk Band" in leaderboard.columns:
-            leaderboard = leaderboard[leaderboard["Risk Band"] == "Watchlist"]
+        if band_filter == "Mixed Start" and "Risk Band" in leaderboard.columns:
+            leaderboard = leaderboard[leaderboard["Risk Band"] == "Mixed Start"]
         if top_n:
             leaderboard = leaderboard.head(top_n)
     return leaderboard
@@ -208,9 +266,9 @@ def _inject_styles() -> None:
 
 
 def _band_style(band: str) -> Dict[str, str]:
-    if band == "Healthy":
+    if band == "Resilient Start":
         return {"background": "rgba(34, 197, 94, 0.16)", "color": "#86efac"}
-    if band == "Watchlist":
+    if band == "Mixed Start":
         return {"background": "rgba(245, 158, 11, 0.16)", "color": "#fcd34d"}
     return {"background": "rgba(248, 113, 113, 0.16)", "color": "#fca5a5"}
 
@@ -221,14 +279,8 @@ def _render_hero(overview: Dict[str, float]) -> None:
         <div class="hero">
             <h1>AvaForensics MVP</h1>
             <p>
-                Avalanche-native protocol health scoring built from real TVL time-series data,
-                with price divergence and on-chain enrichment where available.
-            </p>
-            <p style="margin-top: 0.9rem;">
-                {overview['protocols_analyzed']} protocols analyzed |
-                baseline AUC {overview['baseline_auc']:.3f} |
-                price coverage {overview['price_coverage']} |
-                on-chain coverage {overview['onchain_coverage']}
+                Avalanche protocol lifecycle analysis built from clean AVAX core histories,
+                early-risk scoring, and evidence-backed lifecycle interpretation.
             </p>
         </div>
         """,
@@ -241,15 +293,98 @@ def _render_score(protocol: Dict[str, object]) -> None:
     st.markdown(
         f"""
         <div class="score-card">
-            <div class="score-label">Health Score</div>
+            <div class="score-label">Early Risk</div>
             <div class="score-value">{protocol['health_score']:.1f}</div>
             <div class="score-band" style="background:{style['background']}; color:{style['color']};">
                 {protocol['risk_band']}
             </div>
             <div style="margin-top: 1rem; color: #cbd5e1; font-size: 0.95rem;">
-                Dead probability: {protocol['dead_probability'] * 100:.1f}%<br/>
+                Stage 1 terminal-decay risk: {protocol['dead_probability'] * 100:.1f}%<br/>
                 Category: {protocol['category']}<br/>
-                Current label: {str(protocol['label']).title()}
+                Snapshot status: {str(protocol['current_status']).replace('_', ' ').title()}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _render_avax_footprint(protocol: Dict[str, object]) -> None:
+    st.markdown(
+        f"""
+        <div class="score-card" style="min-height: 220px;">
+            <div class="score-label">Current AVAX Footprint</div>
+            <div style="margin-top: 0.35rem; color:#f8fafc; font-size:1.45rem; font-weight:700; line-height:1.2;">
+                {protocol['avax_footprint_label']}
+            </div>
+            <div style="margin-top: 0.95rem; color:#cbd5e1; font-size: 0.95rem; line-height: 1.55;">
+                AVAX core TVL: {protocol['current_avax_core_tvl_display']}<br/>
+                Total core TVL: {protocol['current_total_core_tvl_display']}<br/>
+                AVAX share: {protocol['current_avax_share_display']}<br/>
+                Snapshot status: {str(protocol['current_status']).replace('_', ' ').title()}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _render_lifecycle_interpretation(protocol: Dict[str, object]) -> None:
+    interpretation = protocol["lifecycle_interpretation"]
+    evidence = interpretation["evidence_level"]
+    tone = {
+        "On-Chain Supported": ("rgba(34, 197, 94, 0.16)", "#86efac"),
+        "Weak On-Chain Support": ("rgba(132, 204, 22, 0.16)", "#bef264"),
+        "Address Registered": ("rgba(59, 130, 246, 0.16)", "#93c5fd"),
+        "Methodology Backed": ("rgba(96, 165, 250, 0.16)", "#bfdbfe"),
+        "Threshold Only": ("rgba(245, 158, 11, 0.16)", "#fcd34d"),
+        "Inference Only": ("rgba(148, 163, 184, 0.16)", "#cbd5e1"),
+        "Model Only": ("rgba(148, 163, 184, 0.16)", "#cbd5e1"),
+        "Address Mismatch": ("rgba(248, 113, 113, 0.16)", "#fca5a5"),
+        "Address Gap": ("rgba(248, 113, 113, 0.16)", "#fca5a5"),
+    }.get(evidence, ("rgba(148, 163, 184, 0.16)", "#cbd5e1"))
+    st.markdown(
+        f"""
+        <div class="score-card" style="min-height: 230px;">
+            <div class="score-label">Lifecycle Interpretation</div>
+            <div style="margin-top: 0.35rem; color:#f8fafc; font-size:1.45rem; font-weight:700; line-height:1.2;">
+                {interpretation['mode']}
+            </div>
+            <div class="score-band" style="background:{tone[0]}; color:{tone[1]};">
+                {evidence}
+            </div>
+            <div style="margin-top: 0.95rem; color:#cbd5e1; font-size: 0.95rem; line-height: 1.5;">
+                {interpretation['summary']}
+            </div>
+            <div style="margin-top: 0.8rem; color:#94a3b8; font-size: 0.9rem; line-height: 1.45;">
+                {interpretation['caveat']}
+            </div>
+            <div style="margin-top: 0.9rem; color:#e2e8f0; font-size: 0.92rem; line-height: 1.55;">
+                AVAX core TVL: {protocol['current_avax_core_tvl_display']}<br/>
+                AVAX share: {protocol['current_avax_share_display']}<br/>
+                Snapshot status: {str(protocol['current_status']).replace('_', ' ').title()}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _render_summary_bar(protocol: Dict[str, object]) -> None:
+    summary = protocol["analyst_summary"]
+    st.markdown(
+        f"""
+        <div class="empty-state" style="margin-bottom:1rem; padding:1rem 1.1rem;">
+            <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.7rem;">
+                <span class="score-band" style="margin-top:0; background:rgba(96, 165, 250, 0.16); color:#bfdbfe;">
+                    {protocol['lifecycle_interpretation']['mode']}
+                </span>
+                <span class="score-band" style="margin-top:0; background:rgba(148, 163, 184, 0.16); color:#cbd5e1;">
+                    {protocol['lifecycle_interpretation']['evidence_level']}
+                </span>
+            </div>
+            <div style="color:#f8fafc; font-size:1.15rem; font-weight:600; line-height:1.45;">
+                {summary['summary']}
             </div>
         </div>
         """,
@@ -281,6 +416,7 @@ def _history_chart(history: pd.DataFrame, protocol_name: str) -> go.Figure:
             fill="tozeroy",
             fillcolor="rgba(96, 165, 250, 0.14)",
             name="TVL",
+            connectgaps=False,
         )
     )
     if not history.empty:
@@ -322,8 +458,8 @@ def _render_signal_cards(signals: List[Dict[str, object]]) -> None:
                         Risk pressure: {signal['risk_score']:.1f}/100
                     </div>
                     <div style="margin-top: 0.7rem; color:#cbd5e1; font-size:0.92rem;">
-                        Alive median: {signal['alive_median']}<br/>
-                        Dead median: {signal['dead_median']}
+                        Lower-risk median: {signal['alive_median']}<br/>
+                        Terminal median: {signal['dead_median']}
                     </div>
                     <div style="margin-top: 0.75rem; color:#94a3b8; font-size:0.92rem;">
                         {signal['description']}
@@ -360,7 +496,7 @@ def _render_comparison(comparison: Dict[str, object] | None) -> None:
         st.info("No comparison peer was available for this protocol.")
         return
 
-    style = _band_style("Healthy" if comparison["label"] == "alive" else "High Risk")
+    style = _band_style(str(comparison["risk_band"]))
     st.markdown(
         f"""
         <div class="mini-card" style="min-height: 140px;">
@@ -368,7 +504,7 @@ def _render_comparison(comparison: Dict[str, object] | None) -> None:
             <div class="value">{comparison['name']}</div>
             <div style="margin-top: 0.5rem; color:#cbd5e1;">
                 Slug: {comparison['slug']}<br/>
-                Current label: {str(comparison['label']).title()}<br/>
+                Current AVAX status: {str(comparison['label']).replace('_', ' ').title()}<br/>
                 Health score: {comparison['health_score']:.1f}<br/>
                 Peak TVL: {comparison['peak_tvl']}<br/>
                 Current TVL: {comparison['current_tvl']}
@@ -432,8 +568,8 @@ def _render_live_refresh(live_data: Dict[str, object]) -> None:
                         Live pressure: {signal['risk_score']:.1f}/100
                     </div>
                     <div style="margin-top: 0.7rem; color:#cbd5e1; font-size:0.92rem;">
-                        Alive median: {signal['alive_median']}<br/>
-                        Dead median: {signal['dead_median']}
+                        Lower-risk median: {signal['alive_median']}<br/>
+                        Terminal median: {signal['dead_median']}
                     </div>
                     <div style="margin-top: 0.75rem; color:#94a3b8; font-size:0.92rem;">
                         {signal['description']}
@@ -483,33 +619,19 @@ def _render_live_refresh(live_data: Dict[str, object]) -> None:
 
 
 def _render_empty_protocol_state(protocols: pd.DataFrame) -> None:
-    st.markdown(
-        """
-        <div class="empty-state">
-            <h3>Start With a Protocol</h3>
-            <p>
-                AvaForensics should open as a product home, not as a pre-selected protocol report.
-                Choose a protocol in the sidebar to unlock health score, TVL history, top risk signals,
-                and live Avalanche monitoring.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     cards = st.columns(3)
     card_specs = [
         (
             "Explore a protocol",
-            "Search by name or slug to inspect one protocol in depth. This is the main workflow for health scoring and explanation.",
+            "Open one protocol report to inspect early risk, AVAX footprint, and lifecycle interpretation.",
         ),
         (
             "Scan the ecosystem",
-            "Use the Leaderboard tab without selecting a protocol to see which Avalanche names look healthier or weaker.",
+            "Use the Leaderboard to compare protocol starts, lifecycle modes, and evidence strength.",
         ),
         (
             "Run live monitoring",
-            "After selecting a protocol, use Live Refresh to pull the latest TVL context and Avalanche on-chain snapshot.",
+            "After selecting a protocol, use Live Refresh to pull the latest TVL context and AVAX on-chain snapshot.",
         ),
     ]
     for column, (title, body) in zip(cards, card_specs):
@@ -528,15 +650,13 @@ def _render_empty_protocol_state(protocols: pd.DataFrame) -> None:
     examples = st.columns(2)
     available_slugs = set(protocols["slug"])
     with examples[0]:
-        if st.button("Try Healthy Example: Benqi Lending", use_container_width=True, disabled="benqi-lending" not in available_slugs):
+        if st.button("Try Resilient Start Example: Benqi Lending", use_container_width=True, disabled="benqi-lending" not in available_slugs):
             st.session_state["pending_protocol_slug"] = "benqi-lending"
             st.rerun()
     with examples[1]:
         if st.button("Try Failed Example: Blizz Finance", use_container_width=True, disabled="blizz-finance" not in available_slugs):
             st.session_state["pending_protocol_slug"] = "blizz-finance"
             st.rerun()
-
-    st.info("Tip: The Leaderboard and Method tabs work even before you choose a protocol.")
 
 
 def main() -> None:
@@ -550,43 +670,27 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Protocol Explorer")
-        search = st.text_input("Search by protocol name or slug")
-        filtered = protocols
-        if search:
-            query = search.strip().lower()
-            filtered = protocols[
-                protocols["name"].str.lower().str.contains(query)
-                | protocols["slug"].str.lower().str.contains(query)
-            ]
-            if filtered.empty:
-                st.warning("No matches found. Showing all protocols instead.")
-                filtered = protocols
-        filtered = filtered.reset_index(drop=True)
-        protocol_options = [""] + filtered["slug"].tolist()
+        protocol_options = [""] + protocols["slug"].tolist()
         pending_slug = st.session_state.pop("pending_protocol_slug", None)
         if pending_slug in protocol_options:
             st.session_state["selected_protocol_slug"] = pending_slug
         if st.session_state.get("selected_protocol_slug", "") not in protocol_options:
             st.session_state["selected_protocol_slug"] = ""
         selected_slug = st.selectbox(
-            "Select a protocol",
+            "Find a protocol",
             options=protocol_options,
             key="selected_protocol_slug",
-            format_func=lambda slug: "Choose a protocol..." if slug == "" else f"{filtered.loc[filtered['slug'] == slug, 'name'].iloc[0]} ({slug})",
+            format_func=lambda slug: "Choose a protocol..." if slug == "" else f"{protocols.loc[protocols['slug'] == slug, 'name'].iloc[0]} ({slug})",
         )
-
-        st.caption("The MVP retrains the baseline RandomForest from local research data on load.")
-        st.metric("Protocols scored", overview["protocols_analyzed"])
-        st.metric("High-risk protocols", overview["high_risk_count"])
-        st.metric("Healthy protocols", overview["healthy_count"])
+        st.caption("Choose a protocol to inspect its AVAX lifecycle.")
 
     live_cache = st.session_state.setdefault("live_refresh_cache", {})
 
     top_metrics = st.columns(4)
     top_metrics[0].metric("Protocols analyzed", overview["protocols_analyzed"])
-    top_metrics[1].metric("Baseline AUC", f"{overview['baseline_auc']:.3f}")
-    top_metrics[2].metric("Price coverage", f"{overview['price_coverage']} protocols")
-    top_metrics[3].metric("On-chain coverage", f"{overview['onchain_coverage']} protocols")
+    top_metrics[1].metric("Stage 1 AUC", f"{overview['baseline_auc']:.3f}")
+    top_metrics[2].metric("Resilient starts", overview["healthy_count"])
+    top_metrics[3].metric("Fragile starts", overview["high_risk_count"])
 
     tabs = st.tabs(["Protocol View", "Leaderboard", "Method"])
 
@@ -603,36 +707,47 @@ def main() -> None:
         else:
             protocol_view = build_protocol_view(state, selected_slug)
             live_data = live_cache.get(selected_slug)
-            left, right = st.columns([0.85, 1.45], gap="large")
+            _render_summary_bar(protocol_view["protocol"])
+            left, right = st.columns([0.9, 1.5], gap="large")
             with left:
                 _render_score(protocol_view["protocol"])
                 st.markdown("<div style='height: 0.9rem;'></div>", unsafe_allow_html=True)
-                _render_comparison(protocol_view["comparison"])
+                _render_lifecycle_interpretation(protocol_view["protocol"])
 
             with right:
                 chart_history = live_data["history"] if live_data and live_data.get("available") else protocol_view["history"]
+                chart_meta = live_data.get("history_meta") if live_data and live_data.get("available") else protocol_view.get("history_meta", {})
                 figure = _history_chart(chart_history, protocol_view["protocol"]["name"])
                 st.plotly_chart(figure, use_container_width=True)
+                activation_note = ""
+                if chart_meta and chart_meta.get("activation_start") is not None:
+                    activation_note = f" Activation-adjusted history starts on {pd.to_datetime(chart_meta['activation_start']).date()}."
+                gap_note = ""
+                if chart_meta and int(chart_meta.get("gap_break_count") or 0) > 0:
+                    gap_note = f" Long gaps are broken instead of being drawn as continuous ramps ({int(chart_meta['gap_break_count'])} break(s))."
                 if live_data and live_data.get("available"):
-                    st.caption("Chart is using live TVL history from DeFiLlama. The highlighted first 90-day window still drives the baseline model.")
+                    st.caption("Chart is using activation-adjusted live AVAX core TVL from DeFiLlama. The highlighted first 90-day window still drives the Stage 1 model." + activation_note + gap_note)
                 else:
-                    st.caption("The highlighted first 90-day window is the basis for baseline prediction features.")
+                    st.caption("The highlighted first 90-day window is the basis for the Stage 1 terminal-decay features." + activation_note + gap_note)
 
-            st.subheader("Top Risk Signals")
-            st.caption("These signals are computed from the protocol's early TVL curve and benchmarked against alive vs dead medians.")
+            st.subheader("Why This Looks Risky")
+            st.caption("These signals explain the Stage 1 score using the protocol's early AVAX core TVL trajectory.")
             _render_signal_cards(protocol_view["risk_signals"])
 
-            st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
-            if live_data:
-                _render_live_refresh(live_data)
-            else:
-                st.info("Run Live Refresh to pull the latest TVL snapshot and Avalanche Glacier activity for this protocol.")
-
-            st.subheader("Supporting Context")
-            _render_supporting_metrics(protocol_view["supporting_metrics"])
-
-            with st.expander("See all tracked signals"):
+            with st.expander("More Context"):
+                st.markdown("#### Supporting Context")
+                _render_supporting_metrics(protocol_view["supporting_metrics"])
+                st.caption(protocol_view["protocol"]["lifecycle_interpretation"]["summary"])
+                st.markdown("<div style='height: 0.35rem;'></div>", unsafe_allow_html=True)
+                _render_comparison(protocol_view["comparison"])
+                st.markdown("<div style='height: 0.35rem;'></div>", unsafe_allow_html=True)
+                if live_data:
+                    _render_live_refresh(live_data)
+                else:
+                    st.info("Run Live Refresh to pull the latest TVL snapshot and Avalanche Glacier activity for this protocol.")
+                st.markdown("<div style='height: 0.35rem;'></div>", unsafe_allow_html=True)
                 all_signals = pd.DataFrame(protocol_view["all_signals"])
+                st.markdown("#### All Tracked Signals")
                 st.dataframe(
                     all_signals[["label", "value", "risk_score", "alive_median", "dead_median", "narrative"]],
                     use_container_width=True,
@@ -640,46 +755,99 @@ def main() -> None:
                 )
 
     with tabs[1]:
-        filter_columns = st.columns([0.9, 0.9, 2.2])
+        filter_columns = st.columns([1.15, 0.85, 0.85, 2.0])
         with filter_columns[0]:
-            band_filter = st.selectbox("Risk band", ["All", "Healthy", "Watchlist", "High Risk"])
+            view_mode = st.selectbox("View", ["Early Risk Ranking", "Lifecycle Interpretation"])
         with filter_columns[1]:
-            top_n = st.selectbox("Rows", [10, 25, 50, 100], index=1)
+            band_filter = st.selectbox("Early-risk band", ["All", "Resilient Start", "Mixed Start", "Fragile Start"])
         with filter_columns[2]:
+            top_n = st.selectbox("Rows", [10, 25, 50, 100], index=1)
+        with filter_columns[3]:
             st.markdown(
-                "<div class='section-note'>Leaderboard is ranked by model-derived health score. "
-                "Current label is the latest known alive/dead tag from the local dataset.</div>",
+                "<div class='section-note'>Use Early Risk Ranking to sort by Stage 1 signal strength, "
+                "or Lifecycle Interpretation to scan relocation, revival, and AVAX-side weakness with evidence context.</div>",
                 unsafe_allow_html=True,
             )
 
-        leaderboard = _load_leaderboard(state, band_filter=band_filter, top_n=top_n)
+        leaderboard = _load_leaderboard(state, band_filter=band_filter, top_n=top_n, view_mode=view_mode)
         st.dataframe(leaderboard, use_container_width=True, hide_index=True)
 
     with tabs[2]:
-        st.subheader("How This MVP Works")
+        st.subheader("What This Product Does")
         st.markdown(
             """
-            - The app loads `422` Avalanche protocols from the local research dataset.
-            - It retrains the baseline RandomForest on the first `90` days of TVL-derived features.
-            - Health score is calculated as `100 * (1 - dead_probability)`.
-            - Risk signals are benchmarked against the median behavior of alive vs dead projects.
-            - Price divergence and Avalanche on-chain data appear as enrichment only where coverage exists.
+            AvaForensics is an **Avalanche protocol lifecycle analysis tool**.
+
+            It combines:
+
+            - **Early Risk**: whether a protocol's early AVAX-side trajectory looked fragile or resilient.
+            - **Current AVAX Footprint**: how much meaningful presence the protocol still has on Avalanche today.
+            - **Lifecycle Interpretation**: whether the current state looks more like terminal decay, cross-chain relocation, native revival, or AVAX-side weakness.
+            - **Evidence Level**: how strongly that lifecycle interpretation is supported by Avalanche-specific address mapping, methodology, or recent activity.
+            """
+        )
+        if overview.get("model_not_ready_count"):
+            st.caption(
+                f"{overview['model_not_ready_count']} core-eligible protocols are currently excluded from the scored universe because they do not yet have a valid Stage 1 early window."
+            )
+        st.markdown("#### How To Read The Three Layers")
+        read_columns = st.columns(3, gap="large")
+        with read_columns[0]:
+            st.markdown(
+                """
+                **Early Risk**
+
+                This is the primary model output. It comes from the retrained `Stage 1`
+                RandomForest and uses the first `90` days of AVAX core TVL features to
+                estimate whether the protocol is likely to enter `structural_decay`
+                within the next `365` days.
+                """
+            )
+        with read_columns[1]:
+            st.markdown(
+                """
+                **Current AVAX Footprint**
+
+                This is a current-state reading, not a prediction. It summarizes the
+                protocol's present AVAX core TVL, total core TVL, AVAX share, and
+                snapshot status to show how meaningful its Avalanche presence is today.
+                """
+            )
+        with read_columns[2]:
+            st.markdown(
+                """
+                **Lifecycle Interpretation + Evidence**
+
+                This is the `Stage 2` interpretation layer. It explains whether the
+                current state looks closer to terminal decay, relocation, native
+                revival, or AVAX-side weakness, and grades how strongly that reading is
+                supported by Avalanche-specific evidence.
+                """
+            )
+
+        st.markdown("#### Coverage And Limits")
+        st.markdown(
+            f"""
+            - `Protocols scored`: **{overview['protocols_analyzed']}**
+            - `Stage 1 AUC`: **{overview['baseline_auc']:.3f}**
+            - `Stage 1 accuracy`: **{overview['baseline_accuracy']:.3f}**
+            - `Price coverage`: **{overview['price_coverage']}** protocols
+            - `On-chain coverage`: **{overview['onchain_coverage']}** protocols
+            - `Model not ready`: **{overview['model_not_ready_count']}** core-eligible protocols
+
+            A high early score does **not** automatically mean strong current AVAX
+            health. Multi-chain protocols can look resilient in their early AVAX
+            trajectory while now having a very thin AVAX footprint.
             """
         )
 
-        method_metrics = st.columns(4)
-        method_metrics[0].metric("Alive protocols", overview["alive_protocols"])
-        method_metrics[1].metric("Dead protocols", overview["dead_protocols"])
-        method_metrics[2].metric("Accuracy", f"{overview['baseline_accuracy']:.3f}")
-        method_metrics[3].metric("Watchlist", overview["watchlist_count"])
-
+        st.markdown("#### Current Evidence Posture")
         st.markdown(
             """
-            The MVP is intentionally narrow for Stage 2:
-
-            - One product surface: protocol health explorer.
-            - One primary model: TVL early-warning baseline.
-            - Two optional enrichments: price/TVL divergence and Avalanche on-chain activity.
+            - `multichain_relocation` is fully covered by `Address Registered` or `Methodology Backed`
+            - `avax_side_decay_but_globally_alive` is fully covered by `Address Registered` or `Methodology Backed`
+            - `native_revival_or_threshold_boundary` now spans `Address Registered`, `Methodology Backed`, `Weak On-Chain Support`, `On-Chain Supported`, and a small `Threshold Only` remainder
+            - Evidence levels should be read as interpretation strength, not as final ground truth
             """
         )
 

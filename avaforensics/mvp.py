@@ -13,55 +13,92 @@ import requests
 from dotenv import load_dotenv
 from scipy import stats
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "avax_data"
+V2_OUTPUT_DIR = BASE_DIR / "experiments" / "protocol_decay_lab" / "outputs"
+V2_DATASET_DIR = V2_OUTPUT_DIR / "dataset_v2"
+V2_MODEL_DIR = V2_OUTPUT_DIR / "model_v2"
 DEFILLAMA_PROTOCOL_URL = "https://api.llama.fi/protocol/{slug}"
 GLACIER_BASE_URL = "https://glacier-api.avax.network/v1"
 AVALANCHE_CHAIN_ID = "43114"
 REQUEST_TIMEOUT_SECONDS = 20
+STAGE1_RANDOM_STATE = 42
+SAFE_TVL_FLOOR = 1_000.0
+EARLY_WINDOW_DAYS = 90
+MIN_EARLY_POINTS = 30
+DISPLAY_GAP_DAYS = 14
 
 load_dotenv(BASE_DIR / ".env")
 
 MODEL_EXCLUDE_COLUMNS = {"slug", "label", "name", "category"}
+STAGE1_EXCLUDE_COLUMNS = {
+    "slug",
+    "name",
+    "category",
+    "current_status",
+    "structural_decay_label_v2",
+    "structural_decay_target_v2",
+    "history_source_mode",
+    "core_universe_status",
+    "decay_mode_v2",
+    "stage1_terminal_target",
+    "launch_date",
+    "old_label",
+    "target",
+    "label_status",
+    "target_known",
+    "risk_band",
+    "reason_1",
+    "reason_2",
+    "reason_3",
+}
 
 SIGNAL_SPECS = [
     {
         "feature": "peak_day_frac",
-        "label": "TVL Peak Timing",
+        "label": "Peak Timing",
         "unit": "day",
         "window_days": 90,
         "decimals": 0,
         "direction": "high",
-        "description": "Projects that peak too early often behave like pump-and-dump launches.",
+        "description": "Protocols that peak too early often resemble fragile early launches.",
     },
     {
-        "feature": "retention_at_end",
-        "label": "90-Day TVL Retention",
+        "feature": "retention_ratio",
+        "label": "90-Day Retention",
         "unit": "percent",
         "window_days": None,
         "decimals": 1,
         "direction": "high",
-        "description": "Healthy protocols keep more of their early TVL instead of bleeding out.",
+        "description": "Stronger protocols retain more of their early AVAX-side liquidity.",
     },
     {
-        "feature": "half_ratio",
-        "label": "Second-Half Ratio",
+        "feature": "active_day_frac",
+        "label": "Active-Day Density",
+        "unit": "percent",
+        "direction": "high",
+        "decimals": 1,
+        "description": "A healthier early curve spends more days above the minimum active TVL threshold.",
+    },
+    {
+        "feature": "drawdown_ratio",
+        "label": "Early Drawdown",
+        "unit": "percent",
+        "direction": "low",
+        "decimals": 1,
+        "description": "Lower early drawdown means the protocol did not collapse immediately after its first peak.",
+    },
+    {
+        "feature": "rolling7_end_vs_peak",
+        "label": "Late Window Strength",
         "unit": "ratio",
         "window_days": None,
         "decimals": 2,
         "direction": "high",
-        "description": "The back half of a healthy protocol's early history should stay close to the front half.",
-    },
-    {
-        "feature": "half_life_frac",
-        "label": "Post-Peak Half-Life",
-        "unit": "percent",
-        "window_days": None,
-        "decimals": 1,
-        "direction": "high",
-        "description": "Longer half-life means the protocol kept value after its early peak.",
+        "description": "The final stretch of the early window should still hold a meaningful fraction of the peak.",
     },
     {
         "feature": "log_peak_tvl",
@@ -75,9 +112,9 @@ SIGNAL_SPECS = [
 ]
 
 RISK_BANDS = [
-    (75, "Healthy"),
-    (50, "Watchlist"),
-    (0, "High Risk"),
+    (75, "Resilient Start"),
+    (50, "Mixed Start"),
+    (0, "Fragile Start"),
 ]
 
 LIVE_SIGNAL_SPECS = [
@@ -119,15 +156,39 @@ def _optional_csv(name: str, **kwargs) -> pd.DataFrame:
     return pd.read_csv(path, **kwargs)
 
 
+def _read_v2_csv(name: str, **kwargs) -> pd.DataFrame:
+    path = V2_DATASET_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"Missing required v2 dataset: {path}")
+    return pd.read_csv(path, **kwargs)
+
+
+def _read_v2_model_csv(name: str, **kwargs) -> pd.DataFrame:
+    path = V2_MODEL_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"Missing required v2 model output: {path}")
+    return pd.read_csv(path, **kwargs)
+
+
 def _feature_columns(df: pd.DataFrame) -> List[str]:
     return [column for column in df.columns if column not in MODEL_EXCLUDE_COLUMNS]
+
+
+def _stage1_feature_columns(df: pd.DataFrame) -> List[str]:
+    cols: List[str] = []
+    for column in df.columns:
+        if column in STAGE1_EXCLUDE_COLUMNS:
+            continue
+        if pd.api.types.is_numeric_dtype(df[column]):
+            cols.append(column)
+    return cols
 
 
 def _risk_band(score: float) -> str:
     for threshold, label in RISK_BANDS:
         if score >= threshold:
             return label
-    return "High Risk"
+    return "Fragile Start"
 
 
 def _currency(value: Optional[float]) -> str:
@@ -185,8 +246,299 @@ def _format_delta(direction: str, row_value: float, alive_median: float, dead_me
     else:
         gap = alive_median - row_value
     if closer_to_dead:
-        return f"Closer to dead-project median than alive-project median ({gap:.2f} vs alive baseline)."
-    return f"Stronger than the alive-project median by {gap:.2f}."
+        return f"Closer to the terminal-decay median than the lower-risk median ({gap:.2f} vs lower-risk baseline)."
+    return f"Stronger than the lower-risk median by {gap:.2f}."
+
+
+def _humanize_status(value: object) -> str:
+    if value is None or pd.isna(value):
+        return "Unknown"
+    return str(value).replace("_", " ").title()
+
+
+def _display_mode_label(value: object) -> str:
+    mapping = {
+        "terminal_global_decay": "Terminal Decay",
+        "multichain_relocation": "Likely Cross-Chain Relocation",
+        "native_revival_or_threshold_boundary": "Native Revival or Boundary Case",
+        "avax_side_decay_but_globally_alive": "AVAX-Side Weakness",
+        "resilient_or_unproven": "No Strong Terminal Signal",
+        "not_core_eligible": "Not Core Eligible",
+        "data_incomplete": "Data Incomplete",
+    }
+    if value is None or pd.isna(value):
+        return "Unknown"
+    return mapping.get(str(value), _humanize_status(value))
+
+
+def _display_evidence_label(value: object) -> str:
+    mapping = {
+        "onchain_supported": "On-Chain Supported",
+        "weak_onchain_support": "Weak On-Chain Support",
+        "address_registered": "Address Registered",
+        "methodology_backed": "Methodology Backed",
+        "threshold_only": "Threshold Only",
+        "inferred_only": "Inference Only",
+        "address_mismatch": "Address Mismatch",
+        "address_gap": "Address Gap",
+        "model_only": "Model Only",
+        "not_eligible": "Not Eligible",
+    }
+    if value is None or pd.isna(value):
+        return "Unknown"
+    return mapping.get(str(value), _humanize_status(value))
+
+
+def _evidence_caveat(value: object) -> str:
+    mapping = {
+        "onchain_supported": "Recent Avalanche activity supports this interpretation directly.",
+        "weak_onchain_support": "Short-window Avalanche activity was observed, but the support is still partial.",
+        "address_registered": "Avalanche contract mapping is confirmed and live code is present on C-Chain.",
+        "methodology_backed": "This interpretation is supported by chain-specific adapter or payload methodology for Avalanche.",
+        "threshold_only": "This is mostly a boundary reading driven by threshold status rather than stronger activity evidence.",
+        "inferred_only": "This interpretation is still primarily model- and TVL-driven.",
+        "address_mismatch": "The current address candidate does not map cleanly to Avalanche live code.",
+        "address_gap": "Avalanche contract mapping is still missing.",
+        "model_only": "This interpretation currently comes from the model layer only.",
+        "not_eligible": "This protocol is outside the AVAX core scoring universe.",
+    }
+    if value is None or pd.isna(value):
+        return "Evidence is currently limited."
+    return mapping.get(str(value), "Evidence is currently limited.")
+
+
+def _footprint_summary(row: pd.Series) -> str:
+    avax_share = row.get("current_avax_share")
+    current_avax_tvl = row.get("current_avax_core_tvl")
+    current_status = str(row.get("current_status") or "")
+    if pd.notna(avax_share) and float(avax_share) <= 0.01:
+        return "AVAX footprint is now very thin relative to global core TVL."
+    if current_status == "low_tvl_on_avax":
+        return "Current AVAX-side liquidity is weak even if the protocol remains active elsewhere."
+    if pd.notna(current_avax_tvl) and float(current_avax_tvl) >= 10_000_000:
+        return "Current AVAX footprint is still meaningful in absolute terms."
+    return "Current AVAX footprint is active, but should be read alongside cross-chain context."
+
+
+def _current_avax_posture(row: pd.Series) -> str:
+    avax_share = row.get("current_avax_share")
+    current_status = str(row.get("current_status") or "")
+    current_avax_tvl = row.get("current_avax_core_tvl")
+    if current_status == "low_tvl_on_avax":
+        return "Weak on Avalanche"
+    if pd.notna(avax_share) and float(avax_share) < 0.01:
+        return "Thin AVAX Presence"
+    if pd.notna(current_avax_tvl) and float(current_avax_tvl) >= 10_000_000:
+        return "Meaningful AVAX Presence"
+    return "Active on Avalanche"
+
+
+def _build_lifecycle_interpretation(row: pd.Series) -> Dict[str, str]:
+    mode_raw = row.get("decay_mode_v2")
+    evidence_raw = row.get("evidence_level")
+    mode_label = _display_mode_label(mode_raw)
+    evidence_label = _display_evidence_label(evidence_raw)
+    evidence_summary = row.get("evidence_summary")
+    if evidence_summary is None or pd.isna(evidence_summary) or not str(evidence_summary).strip():
+        evidence_summary = "Evidence for this interpretation is currently limited."
+    return {
+        "mode": mode_label,
+        "evidence_level": evidence_label,
+        "summary": str(evidence_summary),
+        "caveat": _evidence_caveat(evidence_raw),
+        "footprint_summary": _footprint_summary(row),
+    }
+
+
+def _build_analyst_summary(row: pd.Series) -> Dict[str, object]:
+    risk = float(row.get("dead_probability") or 0.0)
+    mode_label = _display_mode_label(row.get("product_decay_mode") or row.get("decay_mode_v2"))
+    evidence_label = _display_evidence_label(row.get("evidence_level"))
+    posture = _current_avax_posture(row)
+    if risk < 0.15:
+        early_line = "Early AVAX trajectory looks resilient."
+    elif risk < 0.4:
+        early_line = "Early AVAX trajectory looks mixed."
+    else:
+        early_line = "Early AVAX trajectory carries elevated terminal-decay risk."
+
+    if posture == "Meaningful AVAX Presence":
+        footprint_line = "Current AVAX footprint is still meaningful in absolute terms."
+    elif posture == "Thin AVAX Presence":
+        footprint_line = "Current AVAX footprint is active but very thin relative to global core TVL."
+    elif posture == "Weak on Avalanche":
+        footprint_line = "Current AVAX-side liquidity is weak even if the broader protocol remains active elsewhere."
+    else:
+        footprint_line = "Current AVAX footprint remains active and above threshold."
+
+    summary = f"{early_line} Lifecycle interpretation points to {mode_label.lower()}, supported at the {evidence_label.lower()} level."
+    reasons = [
+        early_line,
+        footprint_line,
+        str(row.get("evidence_summary") or "Lifecycle interpretation evidence is currently limited."),
+    ]
+    return {"summary": summary, "reasons": reasons}
+
+
+def _find_activation_start(tvl: np.ndarray) -> int:
+    if len(tvl) == 0:
+        return 0
+    for index in range(max(1, len(tvl) - 2)):
+        window = tvl[index:index + 3]
+        if len(window) >= 2 and int((window > 0).sum()) >= 2:
+            if float(window[0]) > 0.0:
+                return index
+            positive_offsets = np.flatnonzero(window > 0)
+            if len(positive_offsets) > 0:
+                return index + int(positive_offsets[0])
+            return index
+    return 0
+
+
+def _trim_to_activation(df_tvl: pd.DataFrame) -> pd.DataFrame:
+    df = df_tvl.sort_values("date").reset_index(drop=True).copy()
+    tvl = df["tvl"].fillna(0.0).to_numpy(dtype=float)
+    start_idx = _find_activation_start(tvl)
+    return df.iloc[start_idx:].reset_index(drop=True).copy()
+
+
+def _break_long_gaps(df_tvl: pd.DataFrame, gap_days: int = DISPLAY_GAP_DAYS) -> tuple[pd.DataFrame, int]:
+    if df_tvl.empty or len(df_tvl) < 2:
+        return df_tvl.copy(), 0
+
+    df = df_tvl.sort_values("date").reset_index(drop=True).copy()
+    rows: List[Dict[str, object]] = []
+    gap_breaks = 0
+
+    for index, row in df.iterrows():
+        if index > 0:
+            previous_date = pd.to_datetime(df.iloc[index - 1]["date"])
+            current_date = pd.to_datetime(row["date"])
+            if (current_date - previous_date).days > gap_days:
+                gap_breaks += 1
+                rows.append(
+                    {
+                        "date": current_date - pd.Timedelta(seconds=1),
+                        "tvl": np.nan,
+                        "day_index": np.nan,
+                    }
+                )
+        rows.append(
+            {
+                "date": pd.to_datetime(row["date"]),
+                "tvl": row["tvl"],
+                "day_index": row["day_index"] if "day_index" in df.columns else np.nan,
+            }
+        )
+
+    return pd.DataFrame(rows), gap_breaks
+
+
+def _prepare_display_history(df_tvl: pd.DataFrame) -> Dict[str, object]:
+    if df_tvl.empty:
+        return {
+            "history": df_tvl.copy(),
+            "activation_start": None,
+            "hidden_pre_activation_points": 0,
+            "gap_break_count": 0,
+            "raw_points": 0,
+        }
+
+    raw = df_tvl.sort_values("date").reset_index(drop=True).copy()
+    adjusted = _trim_to_activation(raw)
+    display_history, gap_break_count = _break_long_gaps(adjusted)
+
+    return {
+        "history": display_history,
+        "activation_start": adjusted["date"].iloc[0] if not adjusted.empty else raw["date"].iloc[0],
+        "hidden_pre_activation_points": int(max(len(raw) - len(adjusted), 0)),
+        "gap_break_count": int(gap_break_count),
+        "raw_points": int(len(raw)),
+    }
+
+
+def _get_early_window(df_tvl: pd.DataFrame) -> Optional[pd.DataFrame]:
+    if df_tvl.empty:
+        return None
+    cutoff = df_tvl["date"].iloc[0] + pd.Timedelta(days=EARLY_WINDOW_DAYS)
+    early = df_tvl[df_tvl["date"] <= cutoff].copy()
+    if len(early) < MIN_EARLY_POINTS:
+        return None
+    return early
+
+
+def _extract_stage1_v2_features(df_tvl: pd.DataFrame) -> Optional[Dict[str, float]]:
+    trimmed = _trim_to_activation(df_tvl)
+    early = _get_early_window(trimmed)
+    if early is None:
+        return None
+
+    tvl = early["tvl"].fillna(0.0).clip(lower=0.0).to_numpy(dtype=float)
+    log_tvl = np.log1p(tvl)
+    n_points = len(tvl)
+    peak_idx = int(np.argmax(tvl))
+    peak_tvl = max(float(tvl.max()), 1.0)
+    end_tvl = max(float(tvl[-1]), 0.0)
+    start_tvl = max(float(tvl[0]), 0.0)
+    median_tvl = float(np.median(tvl))
+    safe_tvl = np.maximum(tvl, SAFE_TVL_FLOOR)
+    log_returns = np.diff(np.log1p(safe_tvl))
+    post_peak_log = log_tvl[peak_idx:]
+    rolling_7 = pd.Series(log_tvl).rolling(7, min_periods=1).mean().to_numpy(dtype=float)
+    total_span_days = int((trimmed["date"].iloc[-1] - trimmed["date"].iloc[0]).days)
+    early_span_days = int((early["date"].iloc[-1] - early["date"].iloc[0]).days)
+    early_peak_day = int((early["date"].iloc[peak_idx] - early["date"].iloc[0]).days)
+    slope_total, _, _, _, _ = stats.linregress(np.arange(n_points), log_tvl) if n_points >= 3 else (0.0, 0, 0, 0, 0)
+    slope_post, _, _, _, _ = stats.linregress(np.arange(len(post_peak_log)), post_peak_log) if len(post_peak_log) >= 3 else (0.0, 0, 0, 0, 0)
+    stable_band = np.mean(np.abs(log_tvl - np.median(log_tvl)) <= (np.std(log_tvl) + 1e-6))
+    active_day_frac = float(np.mean(tvl >= 10_000.0))
+    nonzero_day_frac = float(np.mean(tvl > 0.0))
+
+    return {
+        "launch_trim_days": float(max(len(df_tvl) - len(trimmed), 0)),
+        "lifecycle_days": float(total_span_days),
+        "early_window_days_observed": float(early_span_days),
+        "data_points": float(n_points),
+        "log_start_tvl": float(np.log1p(start_tvl)),
+        "log_peak_tvl": float(np.log1p(peak_tvl)),
+        "log_end_tvl": float(np.log1p(end_tvl)),
+        "log_median_tvl": float(np.log1p(median_tvl)),
+        "retention_ratio": float((end_tvl + SAFE_TVL_FLOOR) / (peak_tvl + SAFE_TVL_FLOOR)),
+        "drawdown_ratio": float((peak_tvl - end_tvl) / peak_tvl),
+        "peak_day_frac": float(peak_idx / max(n_points - 1, 1)),
+        "peak_day_ratio_by_span": float(early_peak_day / max(EARLY_WINDOW_DAYS, 1)),
+        "auc_norm": float(log_tvl.mean() / max(log_tvl.max(), 1e-6)),
+        "slope_total_log": float(slope_total),
+        "slope_post_log": float(slope_post),
+        "vol_log_ret": float(np.std(log_returns)) if len(log_returns) > 1 else 0.0,
+        "mean_log_ret": float(np.mean(log_returns)) if len(log_returns) > 0 else 0.0,
+        "downside_log_ret": float(np.std(np.minimum(log_returns, 0.0))) if len(log_returns) > 1 else 0.0,
+        "crash_15_count": float((log_returns < np.log(0.85)).sum()) if len(log_returns) > 0 else 0.0,
+        "rebound_15_count": float((log_returns > np.log(1.15)).sum()) if len(log_returns) > 0 else 0.0,
+        "nonzero_day_frac": nonzero_day_frac,
+        "active_day_frac": active_day_frac,
+        "stable_band_frac": float(stable_band),
+        "rolling7_end_vs_peak": float((rolling_7[-1] + 1e-6) / (rolling_7.max() + 1e-6)),
+        "peak_to_median_log_gap": float(np.log1p(peak_tvl) - np.median(log_tvl)),
+    }
+
+
+def _stage1_pipeline() -> Pipeline:
+    return Pipeline(
+        [
+            ("imputer", SimpleImputer(strategy="median")),
+            (
+                "rf",
+                RandomForestClassifier(
+                    n_estimators=500,
+                    min_samples_leaf=4,
+                    class_weight="balanced",
+                    random_state=STAGE1_RANDOM_STATE,
+                    n_jobs=-1,
+                ),
+            ),
+        ]
+    )
 
 
 def _signal_risk_score(
@@ -211,6 +563,17 @@ def _signal_risk_score(
 
 
 def _load_tvl_history(slug: str) -> pd.DataFrame:
+    v2_history_path = V2_DATASET_DIR / "observations" / f"{slug}.csv"
+    if v2_history_path.exists():
+        history = pd.read_csv(v2_history_path, parse_dates=["date"])
+        if "avax_core_tvl" in history.columns:
+            history = history[["date", "avax_core_tvl"]].rename(columns={"avax_core_tvl": "tvl"})
+            history = history.dropna(subset=["tvl"]).copy()
+            history["tvl"] = pd.to_numeric(history["tvl"], errors="coerce").fillna(0.0)
+            history = history.sort_values("date").reset_index(drop=True)
+            history["day_index"] = np.arange(len(history))
+            return history
+
     history_path = DATA_DIR / f"tvl_{slug}.csv"
     if history_path.exists():
         history = pd.read_csv(history_path, parse_dates=["date"])
@@ -239,16 +602,12 @@ def _extract_tvl_history_from_protocol(protocol_payload: Dict[str, object]) -> p
     chain_tvls = protocol_payload.get("chainTvls", {}) or {}
     records = None
 
-    for chain_key, chain_value in chain_tvls.items():
-        if "avalanche" in chain_key.lower() and isinstance(chain_value, dict) and chain_value.get("tvl"):
-            records = chain_value["tvl"]
-            break
+    avalanche_history = chain_tvls.get("Avalanche")
+    if isinstance(avalanche_history, dict) and avalanche_history.get("tvl"):
+        records = avalanche_history["tvl"]
 
     if records is None:
-        if isinstance(protocol_payload.get("tvl"), list):
-            records = protocol_payload["tvl"]
-        else:
-            records = []
+        records = []
 
     if not records:
         return pd.DataFrame(columns=["date", "tvl", "day_index"])
@@ -497,8 +856,8 @@ def _build_live_signals(state: Dict[str, object], live_metrics: Dict[str, float]
         if feature not in medians.columns:
             continue
         row_value = live_metrics.get(feature)
-        alive_median = medians.at["alive", feature]
-        dead_median = medians.at["dead", feature]
+        alive_median = medians.at["resilient", feature]
+        dead_median = medians.at["terminal_decay", feature]
         risk_score = _signal_risk_score(row_value, alive_median, dead_median, str(spec["direction"]))
         signals.append(
             {
@@ -518,52 +877,114 @@ def _build_live_signals(state: Dict[str, object], live_metrics: Dict[str, float]
 
 
 @lru_cache(maxsize=1)
-def load_app_state() -> Dict[str, object]:
-    early_features = _read_csv("early_features.csv")
-    features_summary = _read_csv("features_summary.csv")
-    protocols = _read_csv("protocols_labeled.csv")
-    feature_importance = _optional_csv("feature_importance.csv")
+def load_app_state(_unused: Optional[str] = None) -> Dict[str, object]:
+    early_features = _read_v2_csv("early_features_v2.csv")
+    features_summary = _read_v2_csv("features_summary_v2.csv")
+    labels = _read_v2_csv("labels_v2.csv")
+    protocols = _read_v2_csv("registry_v2.csv")
+    stage1_metrics = _read_v2_model_csv("stage1_model_leaderboard_v2.csv")
+    scored = _read_v2_model_csv("two_stage_v2_scores.csv")
+    product_schema = _read_v2_model_csv("product_schema_v2.csv")
+    feature_importance = _read_v2_model_csv("stage1_feature_importance_v2.csv")
     combined_features = _optional_csv("combined_features.csv")
     onchain_features = _optional_csv("onchain_features.csv")
 
-    feature_columns = _feature_columns(early_features)
-    X = early_features[feature_columns].fillna(0)
-    y = (early_features["label"] == "dead").astype(int)
-
-    model = RandomForestClassifier(
-        n_estimators=300,
-        random_state=42,
-        class_weight="balanced",
-        n_jobs=-1,
+    scored = scored[scored["core_universe_status"] == "core_eligible"].copy()
+    early_merge_columns = [
+        column
+        for column in early_features.columns
+        if column
+        not in {
+            "slug",
+            "name",
+            "category",
+            "current_status",
+            "structural_decay_label_v2",
+            "structural_decay_target_v2",
+            "history_source_mode",
+            "data_quality_score_v2",
+            "core_eligible",
+            "core_universe_status",
+        }
+    ]
+    scored = scored.merge(
+        early_features[["slug"] + early_merge_columns],
+        on="slug",
+        how="left",
+        suffixes=("", "_early"),
     )
-
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    auc_scores = cross_val_score(model, X, y, cv=cv, scoring="roc_auc", n_jobs=-1)
-    acc_scores = cross_val_score(model, X, y, cv=cv, scoring="accuracy", n_jobs=-1)
-    probabilities = cross_val_predict(model, X, y, cv=cv, method="predict_proba", n_jobs=-1)[:, 1]
-    model.fit(X, y)
-
-    scored = early_features.copy()
-    scored["dead_probability"] = probabilities
-    scored["health_score"] = ((1.0 - scored["dead_probability"]) * 100).round(1)
-    scored["risk_score"] = (scored["dead_probability"] * 100).round(1)
-    scored["risk_band"] = scored["health_score"].map(_risk_band)
-
     scored = scored.merge(
         features_summary[
             [
                 "slug",
-                "peak_tvl",
-                "current_tvl",
-                "drawdown_from_peak",
-                "lifespan_days",
-                "consecutive_decline_days",
-                "avax_only",
+                "avax_peak_tvl",
+                "avax_current_tvl",
+                "avax_drawdown_from_peak",
+                "avax_tvl_30d_change",
+                "avax_tvl_90d_change",
+                "avax_lifespan_days",
+                "avax_consecutive_decline_days",
             ]
         ],
         on="slug",
         how="left",
+        suffixes=("", "_summary"),
     )
+    scored = scored.merge(
+        product_schema[
+            [
+                "protocol_id",
+                "decay_mode",
+                "evidence_level",
+                "evidence_summary",
+                "address_registry_status",
+                "candidate_address",
+                "candidate_source",
+                "adapter_address",
+                "adapter_role",
+                "adapter_evidence_status",
+                "adapter_source_type",
+                "adapter_source_note",
+                "validation_status",
+            ]
+        ].rename(columns={"protocol_id": "slug", "decay_mode": "product_decay_mode"}),
+        on="slug",
+        how="left",
+    )
+    scored["dead_probability"] = scored["stage1_terminal_prob"]
+    scored["health_score"] = ((1.0 - scored["dead_probability"]) * 100).round(1)
+    scored["risk_score"] = (scored["dead_probability"] * 100).round(1)
+    scored["risk_band"] = scored["health_score"].map(_risk_band)
+    scored["label"] = scored["current_status"]
+    scored["peak_tvl"] = scored["avax_peak_tvl"]
+    scored["current_tvl"] = scored["avax_current_tvl"]
+    scored["drawdown_from_peak"] = scored["avax_drawdown_from_peak"]
+    scored["tvl_30d_change"] = scored["avax_tvl_30d_change"]
+    scored["tvl_90d_change"] = scored["avax_tvl_90d_change"]
+    scored["lifespan_days"] = scored["avax_lifespan_days"]
+    scored["consecutive_decline_days"] = scored["avax_consecutive_decline_days"]
+    scored["snapshot_status"] = scored["current_status"].map(_humanize_status)
+    scored["core_source_mode"] = scored["history_source_mode"].map(_humanize_status)
+    scored["decay_mode_label"] = scored["product_decay_mode"].map(_display_mode_label)
+    scored["evidence_level_label"] = scored["evidence_level"].map(_display_evidence_label)
+    scored["model_ready"] = scored["stage1_terminal_prob"].notna()
+    scored = scored[scored["model_ready"]].copy()
+
+    train_frame = early_features.merge(
+        scored[["slug", "decay_mode_v2"]],
+        on="slug",
+        how="left",
+    )
+    stage1_train = train_frame[
+        (train_frame["structural_decay_target_v2"] == 0)
+        | (train_frame["decay_mode_v2"] == "terminal_global_decay")
+    ].copy()
+    stage1_train["stage1_terminal_target"] = (stage1_train["decay_mode_v2"] == "terminal_global_decay").astype(int)
+    feature_columns = _stage1_feature_columns(stage1_train)
+    X = stage1_train[feature_columns]
+    y = stage1_train["stage1_terminal_target"]
+    model = _stage1_pipeline()
+    model.fit(X, y)
 
     if not combined_features.empty:
         price_cols = [
@@ -599,17 +1020,10 @@ def load_app_state() -> Dict[str, object]:
     else:
         scored["has_onchain_signal"] = False
 
-    if feature_importance.empty:
-        feature_importance = pd.DataFrame(
-            {
-                "特征": feature_columns,
-                "重要性": model.feature_importances_,
-            }
-        ).sort_values("重要性", ascending=False)
-
-    medians = early_features.groupby("label")[feature_columns].median(numeric_only=True)
-    if "alive" not in medians.index or "dead" not in medians.index:
-        raise ValueError("Both alive and dead labels are required for the MVP.")
+    medians = stage1_train.groupby("stage1_terminal_target")[feature_columns].median(numeric_only=True)
+    if 0 not in medians.index or 1 not in medians.index:
+        raise ValueError("Both resilient and terminal-decay training rows are required for the MVP.")
+    medians.index = pd.Index(["resilient" if idx == 0 else "terminal_decay" for idx in medians.index], name="stage1_terminal_target")
 
     summary_columns = [
         column
@@ -620,9 +1034,11 @@ def load_app_state() -> Dict[str, object]:
             "lifespan_days",
             "consecutive_decline_days",
         ]
-        if column in features_summary.columns
+        if column in scored.columns
     ]
-    summary_medians = features_summary.groupby("label")[summary_columns].median(numeric_only=True)
+    summary_reference = scored[scored["structural_decay_target_v2"].isin([0, 1])].copy()
+    summary_reference["summary_group"] = summary_reference["structural_decay_target_v2"].map({0: "resilient", 1: "terminal_decay"})
+    summary_medians = summary_reference.groupby("summary_group")[summary_columns].median(numeric_only=True)
 
     leaderboard = scored.sort_values(
         ["health_score", "current_tvl", "peak_tvl"],
@@ -631,31 +1047,24 @@ def load_app_state() -> Dict[str, object]:
     leaderboard.index = leaderboard.index + 1
     leaderboard["rank"] = leaderboard.index
 
-    top_dead_case = (
-        scored[scored["label"] == "dead"]
-        .sort_values(["peak_tvl", "health_score"], ascending=[False, True])
-        .head(1)
-    )
-    top_alive_case = (
-        scored[scored["label"] == "alive"]
-        .sort_values(["health_score", "peak_tvl"], ascending=[False, False])
-        .head(1)
-    )
+    current_status_counts = labels["current_status"].value_counts()
+    best_row = stage1_metrics.sort_values("cv_auc_mean", ascending=False).iloc[0]
 
     overview = {
         "protocols_analyzed": int(len(scored)),
-        "dead_protocols": int((scored["label"] == "dead").sum()),
-        "alive_protocols": int((scored["label"] == "alive").sum()),
-        "baseline_auc": float(auc_scores.mean()),
-        "baseline_auc_std": float(auc_scores.std()),
-        "baseline_accuracy": float(acc_scores.mean()),
+        "active_on_avax_count": int(current_status_counts.get("active_on_avax", 0)),
+        "low_tvl_on_avax_count": int(current_status_counts.get("low_tvl_on_avax", 0)),
+        "boundary_excluded_count": int((labels["core_universe_status"] == "boundary_excluded").sum()),
+        "data_incomplete_count": int((labels["core_universe_status"] == "data_incomplete").sum()),
+        "model_not_ready_count": int(((labels["core_eligible"] == 1) & (~labels["slug"].isin(scored["slug"]))).sum()),
+        "baseline_auc": float(best_row["cv_auc_mean"]),
+        "baseline_auc_std": float(best_row["cv_auc_std"]),
+        "baseline_accuracy": float(best_row["oof_accuracy"]),
         "price_coverage": int(scored["has_price_signal"].sum()),
         "onchain_coverage": int(scored["has_onchain_signal"].sum()),
-        "healthy_count": int((scored["risk_band"] == "Healthy").sum()),
-        "watchlist_count": int((scored["risk_band"] == "Watchlist").sum()),
-        "high_risk_count": int((scored["risk_band"] == "High Risk").sum()),
-        "top_alive_slug": top_alive_case["slug"].iloc[0] if not top_alive_case.empty else None,
-        "top_dead_slug": top_dead_case["slug"].iloc[0] if not top_dead_case.empty else None,
+        "healthy_count": int((scored["risk_band"] == "Resilient Start").sum()),
+        "watchlist_count": int((scored["risk_band"] == "Mixed Start").sum()),
+        "high_risk_count": int((scored["risk_band"] == "Fragile Start").sum()),
     }
 
     return {
@@ -687,10 +1096,13 @@ def get_leaderboard(
         "name",
         "category",
         "health_score",
+        "dead_probability",
         "risk_band",
         "current_tvl",
         "peak_tvl",
         "label",
+        "decay_mode_label",
+        "evidence_level_label",
         "has_price_signal",
         "has_onchain_signal",
     ]
@@ -700,6 +1112,10 @@ def get_leaderboard(
         table["current_tvl"] = table["current_tvl"].map(_currency)
     if "peak_tvl" in table.columns:
         table["peak_tvl"] = table["peak_tvl"].map(_currency)
+    if "dead_probability" in table.columns:
+        table["dead_probability"] = table["dead_probability"].map(lambda value: _percent(value))
+    if "label" in table.columns:
+        table["label"] = table["label"].map(_humanize_status)
     if "has_price_signal" in table.columns:
         table["price_signal"] = table["has_price_signal"].map({True: "Yes", False: "No"})
         table = table.drop(columns=["has_price_signal"])
@@ -710,11 +1126,14 @@ def get_leaderboard(
         columns={
             "name": "Protocol",
             "category": "Category",
-            "health_score": "Health Score",
+            "health_score": "Early Health Score",
+            "dead_probability": "Stage 1 Terminal Risk",
             "risk_band": "Risk Band",
             "current_tvl": "Current TVL",
             "peak_tvl": "Peak TVL",
-            "label": "Current Label",
+            "label": "Snapshot Status",
+            "decay_mode_label": "Lifecycle Interpretation",
+            "evidence_level_label": "Evidence Level",
         }
     )
 
@@ -728,7 +1147,8 @@ def build_protocol_view(state: Dict[str, object], slug: str) -> Dict[str, object
         raise KeyError(f"Unknown protocol slug: {slug}")
     row = match.iloc[0]
 
-    history = _load_tvl_history(slug)
+    raw_history = _load_tvl_history(slug)
+    display_history = _prepare_display_history(raw_history)
     history_summary = {
         "peak_tvl": _currency(row.get("peak_tvl")),
         "current_tvl": _currency(row.get("current_tvl")),
@@ -741,8 +1161,8 @@ def build_protocol_view(state: Dict[str, object], slug: str) -> Dict[str, object
     for spec in SIGNAL_SPECS:
         feature = spec["feature"]
         row_value = row.get(feature)
-        alive_median = medians.at["alive", feature] if feature in medians.columns else np.nan
-        dead_median = medians.at["dead", feature] if feature in medians.columns else np.nan
+        alive_median = medians.at["resilient", feature] if feature in medians.columns else np.nan
+        dead_median = medians.at["terminal_decay", feature] if feature in medians.columns else np.nan
         risk_score = _signal_risk_score(row_value, alive_median, dead_median, str(spec["direction"]))
         signals.append(
             {
@@ -753,15 +1173,20 @@ def build_protocol_view(state: Dict[str, object], slug: str) -> Dict[str, object
                 "value": _format_signal_value(spec, row_value),
                 "alive_median": _format_signal_value(spec, alive_median),
                 "dead_median": _format_signal_value(spec, dead_median),
-                "narrative": _format_delta(str(spec["direction"]), float(row_value), float(alive_median), float(dead_median)),
+                "narrative": _format_delta(str(spec["direction"]), float(row_value), float(alive_median), float(dead_median))
+                if row_value is not None and not pd.isna(row_value)
+                else "Signal is unavailable for this protocol.",
             }
         )
 
     signals = sorted(signals, key=lambda item: item["risk_score"], reverse=True)
 
-    peer_pool = scored_protocols[scored_protocols["label"] != row["label"]].copy()
+    current_is_lower_risk = bool(row["health_score"] >= 50)
+    peer_pool = scored_protocols[(scored_protocols["health_score"] < 50) if current_is_lower_risk else (scored_protocols["health_score"] >= 50)].copy()
+    if peer_pool.empty:
+        peer_pool = scored_protocols[scored_protocols["slug"] != slug].copy()
     peer_pool["distance"] = (peer_pool["log_peak_tvl"] - row["log_peak_tvl"]).abs()
-    peer = peer_pool.sort_values(["distance", "health_score"], ascending=[True, row["label"] == "dead"]).head(1)
+    peer = peer_pool.sort_values(["distance", "health_score"], ascending=[True, not current_is_lower_risk]).head(1)
 
     comparison = None
     if not peer.empty:
@@ -770,17 +1195,25 @@ def build_protocol_view(state: Dict[str, object], slug: str) -> Dict[str, object
             "name": peer_row["name"],
             "slug": peer_row["slug"],
             "label": peer_row["label"],
+            "risk_band": peer_row["risk_band"],
             "health_score": float(peer_row["health_score"]),
             "peak_tvl": _currency(peer_row.get("peak_tvl")),
             "current_tvl": _currency(peer_row.get("current_tvl")),
         }
 
     supporting_metrics = [
-        {"label": "Dead Probability", "value": _percent(row["dead_probability"])},
+        {"label": "Terminal Decay Risk", "value": _percent(row["dead_probability"])},
         {"label": "Risk Band", "value": row["risk_band"]},
         {"label": "Category", "value": row["category"]},
-        {"label": "Current Label", "value": row["label"].title()},
+        {"label": "Current AVAX Status", "value": _humanize_status(row["current_status"])},
+        {"label": "Current AVAX Footprint", "value": _current_avax_posture(row)},
+        {"label": "Lifecycle Interpretation", "value": row.get("decay_mode_label", "Unknown")},
+        {"label": "Evidence Level", "value": row.get("evidence_level_label", "Unknown")},
         {"label": "Avalanche-Native", "value": "Yes" if bool(row.get("avax_only")) else "Multi-chain"},
+        {"label": "AVAX Core TVL", "value": _currency(row.get("current_avax_core_tvl"))},
+        {"label": "Total Core TVL", "value": _currency(row.get("current_total_core_tvl"))},
+        {"label": "AVAX Share", "value": _percent(row.get("current_avax_share"))},
+        {"label": "Address Registry", "value": _humanize_status(row.get("address_registry_status"))},
         {"label": "Price Signal Coverage", "value": "Yes" if bool(row.get("has_price_signal")) else "No"},
         {"label": "On-chain Signal Coverage", "value": "Yes" if bool(row.get("has_onchain_signal")) else "No"},
     ]
@@ -823,8 +1256,30 @@ def build_protocol_view(state: Dict[str, object], slug: str) -> Dict[str, object
             "risk_band": row["risk_band"],
             "dead_probability": float(row["dead_probability"]),
             "label": row["label"],
+            "current_status": row["current_status"],
+            "decay_mode": row.get("product_decay_mode") or row.get("decay_mode_v2"),
+            "decay_mode_label": row.get("decay_mode_label") or _display_mode_label(row.get("decay_mode_v2")),
+            "evidence_level": row.get("evidence_level"),
+            "evidence_level_label": row.get("evidence_level_label") or _display_evidence_label(row.get("evidence_level")),
+            "evidence_summary": row.get("evidence_summary"),
+            "address_registry_status": row.get("address_registry_status"),
+            "current_avax_share": row.get("current_avax_share"),
+            "current_avax_core_tvl": row.get("current_avax_core_tvl"),
+            "current_total_core_tvl": row.get("current_total_core_tvl"),
+            "current_avax_core_tvl_display": _currency(row.get("current_avax_core_tvl")),
+            "current_total_core_tvl_display": _currency(row.get("current_total_core_tvl")),
+            "current_avax_share_display": _percent(row.get("current_avax_share")),
+            "lifecycle_interpretation": _build_lifecycle_interpretation(row),
+            "avax_footprint_label": _current_avax_posture(row),
+            "analyst_summary": _build_analyst_summary(row),
         },
-        "history": history,
+        "history": display_history["history"],
+        "history_meta": {
+            "activation_start": display_history["activation_start"],
+            "hidden_pre_activation_points": display_history["hidden_pre_activation_points"],
+            "gap_break_count": display_history["gap_break_count"],
+            "raw_points": display_history["raw_points"],
+        },
         "history_summary": history_summary,
         "risk_signals": signals[:3],
         "all_signals": signals,
@@ -842,19 +1297,20 @@ def refresh_protocol_live(state: Dict[str, object], slug: str) -> Dict[str, obje
             "reason": "Live protocol data could not be fetched from DeFiLlama.",
         }
 
-    history = _extract_tvl_history_from_protocol(protocol_payload)
-    if history.empty:
+    raw_history = _extract_tvl_history_from_protocol(protocol_payload)
+    if raw_history.empty:
         return {
             "available": False,
             "slug": slug,
             "reason": "Live Avalanche TVL history is not available for this protocol.",
         }
+    display_history = _prepare_display_history(raw_history)
 
     scored_protocols = state["scored_protocols"]
     local_match = scored_protocols[scored_protocols["slug"] == slug]
     local_row = local_match.iloc[0] if not local_match.empty else None
 
-    early_features = _extract_early_features(history)
+    early_features = _extract_stage1_v2_features(raw_history)
     model = state["model"]
     if early_features:
         feature_vector = pd.DataFrame(
@@ -866,7 +1322,7 @@ def refresh_protocol_live(state: Dict[str, object], slug: str) -> Dict[str, obje
         dead_probability = np.nan
         refreshed_health_score = np.nan
 
-    live_metrics = _compute_live_tvl_metrics(history)
+    live_metrics = _compute_live_tvl_metrics(raw_history)
     live_signals = _build_live_signals(state, live_metrics)
     valid_live_signal_scores = [signal["risk_score"] / 100 for signal in live_signals if signal["risk_score"] is not None]
     live_monitor_score = round((1.0 - float(np.mean(valid_live_signal_scores))) * 100, 1) if valid_live_signal_scores else np.nan
@@ -885,13 +1341,19 @@ def refresh_protocol_live(state: Dict[str, object], slug: str) -> Dict[str, obje
         "available": True,
         "slug": slug,
         "protocol_name": protocol_payload.get("name") or (local_row["name"] if local_row is not None else slug),
-        "history": history,
+        "history": display_history["history"],
+        "history_meta": {
+            "activation_start": display_history["activation_start"],
+            "hidden_pre_activation_points": display_history["hidden_pre_activation_points"],
+            "gap_break_count": display_history["gap_break_count"],
+            "raw_points": display_history["raw_points"],
+        },
         "baseline": {
             "refreshed_health_score": refreshed_health_score,
             "dead_probability": dead_probability,
             "risk_band": _risk_band(refreshed_health_score) if not pd.isna(refreshed_health_score) else "Unavailable",
-            "last_live_date": history["date"].max(),
-            "data_points": int(len(history)),
+            "last_live_date": raw_history["date"].max(),
+            "data_points": int(len(raw_history)),
         },
         "live_metrics": {
             **live_metrics,
