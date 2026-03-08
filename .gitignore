@@ -17,3 +17,13 @@ __pycache__/
 
 # ── Jupyter ──────────────────────────────────────────
 .ipynb_checkpoints/
+
+# ── Demo media & generated voice assets ──────────────
+docs/demo_recordings/
+docs/voiceover_audio_sulafat/
+docs/gemini_*
+docs/avaforensics_walkthrough_en*.aiff
+docs/avaforensics_walkthrough_en*.m4a
+*.pcm
+*.wav
+*.mov

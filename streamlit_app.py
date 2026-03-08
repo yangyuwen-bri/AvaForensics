@@ -168,6 +168,39 @@ def _inject_styles() -> None:
                 font-size: 1.1rem;
                 font-weight: 600;
             }
+            .empty-state {
+                padding: 1.35rem 1.4rem;
+                border-radius: 18px;
+                background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.68));
+                border: 1px solid rgba(148, 163, 184, 0.16);
+                margin-bottom: 1rem;
+            }
+            .empty-state h3 {
+                margin: 0 0 0.45rem 0;
+                color: #f8fafc;
+            }
+            .empty-state p {
+                margin: 0;
+                color: #cbd5e1;
+            }
+            .action-card {
+                padding: 1rem 1.05rem;
+                border-radius: 16px;
+                background: rgba(15, 23, 42, 0.62);
+                border: 1px solid rgba(148, 163, 184, 0.14);
+                min-height: 150px;
+            }
+            .action-card .title {
+                color: #f8fafc;
+                font-size: 1rem;
+                font-weight: 600;
+            }
+            .action-card .body {
+                margin-top: 0.5rem;
+                color: #cbd5e1;
+                font-size: 0.93rem;
+                line-height: 1.5;
+            }
         </style>
         """,
         unsafe_allow_html=True,
@@ -449,6 +482,63 @@ def _render_live_refresh(live_data: Dict[str, object]) -> None:
         )
 
 
+def _render_empty_protocol_state(protocols: pd.DataFrame) -> None:
+    st.markdown(
+        """
+        <div class="empty-state">
+            <h3>Start With a Protocol</h3>
+            <p>
+                AvaForensics should open as a product home, not as a pre-selected protocol report.
+                Choose a protocol in the sidebar to unlock health score, TVL history, top risk signals,
+                and live Avalanche monitoring.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    cards = st.columns(3)
+    card_specs = [
+        (
+            "Explore a protocol",
+            "Search by name or slug to inspect one protocol in depth. This is the main workflow for health scoring and explanation.",
+        ),
+        (
+            "Scan the ecosystem",
+            "Use the Leaderboard tab without selecting a protocol to see which Avalanche names look healthier or weaker.",
+        ),
+        (
+            "Run live monitoring",
+            "After selecting a protocol, use Live Refresh to pull the latest TVL context and Avalanche on-chain snapshot.",
+        ),
+    ]
+    for column, (title, body) in zip(cards, card_specs):
+        with column:
+            st.markdown(
+                f"""
+                <div class="action-card">
+                    <div class="title">{title}</div>
+                    <div class="body">{body}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    st.markdown("<div style='height: 0.4rem;'></div>", unsafe_allow_html=True)
+    examples = st.columns(2)
+    available_slugs = set(protocols["slug"])
+    with examples[0]:
+        if st.button("Try Healthy Example: Benqi Lending", use_container_width=True, disabled="benqi-lending" not in available_slugs):
+            st.session_state["selected_protocol_slug"] = "benqi-lending"
+            st.rerun()
+    with examples[1]:
+        if st.button("Try Failed Example: Blizz Finance", use_container_width=True, disabled="blizz-finance" not in available_slugs):
+            st.session_state["selected_protocol_slug"] = "blizz-finance"
+            st.rerun()
+
+    st.info("Tip: The Leaderboard and Method tabs work even before you choose a protocol.")
+
+
 def main() -> None:
     _inject_styles()
 
@@ -472,14 +562,14 @@ def main() -> None:
                 st.warning("No matches found. Showing all protocols instead.")
                 filtered = protocols
         filtered = filtered.reset_index(drop=True)
-
-        default_slug = overview.get("top_dead_slug") or protocols.iloc[0]["slug"]
-        default_index = int(filtered.index[filtered["slug"] == default_slug][0]) if default_slug in set(filtered["slug"]) else 0
+        protocol_options = [""] + filtered["slug"].tolist()
+        if st.session_state.get("selected_protocol_slug", "") not in protocol_options:
+            st.session_state["selected_protocol_slug"] = ""
         selected_slug = st.selectbox(
             "Select a protocol",
-            options=filtered["slug"].tolist(),
-            index=default_index,
-            format_func=lambda slug: f"{filtered.loc[filtered['slug'] == slug, 'name'].iloc[0]} ({slug})",
+            options=protocol_options,
+            key="selected_protocol_slug",
+            format_func=lambda slug: "Choose a protocol..." if slug == "" else f"{filtered.loc[filtered['slug'] == slug, 'name'].iloc[0]} ({slug})",
         )
 
         st.caption("The MVP retrains the baseline RandomForest from local research data on load.")
@@ -487,7 +577,6 @@ def main() -> None:
         st.metric("High-risk protocols", overview["high_risk_count"])
         st.metric("Healthy protocols", overview["healthy_count"])
 
-    protocol_view = build_protocol_view(state, selected_slug)
     live_cache = st.session_state.setdefault("live_refresh_cache", {})
 
     top_metrics = st.columns(4)
@@ -501,47 +590,51 @@ def main() -> None:
     with tabs[0]:
         sidebar_refresh = False
         with st.sidebar:
-            sidebar_refresh = st.button("Live Refresh Selected Protocol", use_container_width=True)
-            if sidebar_refresh:
+            sidebar_refresh = st.button("Live Refresh Selected Protocol", use_container_width=True, disabled=not selected_slug)
+            if sidebar_refresh and selected_slug:
                 with st.spinner("Fetching live TVL and Avalanche on-chain data..."):
                     live_cache[selected_slug] = refresh_protocol_live(state, selected_slug)
 
-        live_data = live_cache.get(selected_slug)
-        left, right = st.columns([0.85, 1.45], gap="large")
-        with left:
-            _render_score(protocol_view["protocol"])
-            st.markdown("<div style='height: 0.9rem;'></div>", unsafe_allow_html=True)
-            _render_comparison(protocol_view["comparison"])
-
-        with right:
-            chart_history = live_data["history"] if live_data and live_data.get("available") else protocol_view["history"]
-            figure = _history_chart(chart_history, protocol_view["protocol"]["name"])
-            st.plotly_chart(figure, use_container_width=True)
-            if live_data and live_data.get("available"):
-                st.caption("Chart is using live TVL history from DeFiLlama. The highlighted first 90-day window still drives the baseline model.")
-            else:
-                st.caption("The highlighted first 90-day window is the basis for baseline prediction features.")
-
-        st.subheader("Top Risk Signals")
-        st.caption("These signals are computed from the protocol's early TVL curve and benchmarked against alive vs dead medians.")
-        _render_signal_cards(protocol_view["risk_signals"])
-
-        st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
-        if live_data:
-            _render_live_refresh(live_data)
+        if not selected_slug:
+            _render_empty_protocol_state(protocols)
         else:
-            st.info("Run Live Refresh to pull the latest TVL snapshot and Avalanche Glacier activity for this protocol.")
+            protocol_view = build_protocol_view(state, selected_slug)
+            live_data = live_cache.get(selected_slug)
+            left, right = st.columns([0.85, 1.45], gap="large")
+            with left:
+                _render_score(protocol_view["protocol"])
+                st.markdown("<div style='height: 0.9rem;'></div>", unsafe_allow_html=True)
+                _render_comparison(protocol_view["comparison"])
 
-        st.subheader("Supporting Context")
-        _render_supporting_metrics(protocol_view["supporting_metrics"])
+            with right:
+                chart_history = live_data["history"] if live_data and live_data.get("available") else protocol_view["history"]
+                figure = _history_chart(chart_history, protocol_view["protocol"]["name"])
+                st.plotly_chart(figure, use_container_width=True)
+                if live_data and live_data.get("available"):
+                    st.caption("Chart is using live TVL history from DeFiLlama. The highlighted first 90-day window still drives the baseline model.")
+                else:
+                    st.caption("The highlighted first 90-day window is the basis for baseline prediction features.")
 
-        with st.expander("See all tracked signals"):
-            all_signals = pd.DataFrame(protocol_view["all_signals"])
-            st.dataframe(
-                all_signals[["label", "value", "risk_score", "alive_median", "dead_median", "narrative"]],
-                use_container_width=True,
-                hide_index=True,
-            )
+            st.subheader("Top Risk Signals")
+            st.caption("These signals are computed from the protocol's early TVL curve and benchmarked against alive vs dead medians.")
+            _render_signal_cards(protocol_view["risk_signals"])
+
+            st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
+            if live_data:
+                _render_live_refresh(live_data)
+            else:
+                st.info("Run Live Refresh to pull the latest TVL snapshot and Avalanche Glacier activity for this protocol.")
+
+            st.subheader("Supporting Context")
+            _render_supporting_metrics(protocol_view["supporting_metrics"])
+
+            with st.expander("See all tracked signals"):
+                all_signals = pd.DataFrame(protocol_view["all_signals"])
+                st.dataframe(
+                    all_signals[["label", "value", "risk_score", "alive_median", "dead_median", "narrative"]],
+                    use_container_width=True,
+                    hide_index=True,
+                )
 
     with tabs[1]:
         filter_columns = st.columns([0.9, 0.9, 2.2])
