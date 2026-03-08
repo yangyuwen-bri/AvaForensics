@@ -529,11 +529,11 @@ def _render_empty_protocol_state(protocols: pd.DataFrame) -> None:
     available_slugs = set(protocols["slug"])
     with examples[0]:
         if st.button("Try Healthy Example: Benqi Lending", use_container_width=True, disabled="benqi-lending" not in available_slugs):
-            st.session_state["selected_protocol_slug"] = "benqi-lending"
+            st.session_state["pending_protocol_slug"] = "benqi-lending"
             st.rerun()
     with examples[1]:
         if st.button("Try Failed Example: Blizz Finance", use_container_width=True, disabled="blizz-finance" not in available_slugs):
-            st.session_state["selected_protocol_slug"] = "blizz-finance"
+            st.session_state["pending_protocol_slug"] = "blizz-finance"
             st.rerun()
 
     st.info("Tip: The Leaderboard and Method tabs work even before you choose a protocol.")
@@ -563,6 +563,9 @@ def main() -> None:
                 filtered = protocols
         filtered = filtered.reset_index(drop=True)
         protocol_options = [""] + filtered["slug"].tolist()
+        pending_slug = st.session_state.pop("pending_protocol_slug", None)
+        if pending_slug in protocol_options:
+            st.session_state["selected_protocol_slug"] = pending_slug
         if st.session_state.get("selected_protocol_slug", "") not in protocol_options:
             st.session_state["selected_protocol_slug"] = ""
         selected_slug = st.selectbox(
