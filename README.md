@@ -74,7 +74,18 @@ For any selected protocol, the UI shows:
 - a **Lifecycle Interpretation** card from Stage 2 + evidence layer
 - an activation-adjusted AVAX core TVL history chart
 - early-window risk signals
-- optional live refresh and Avalanche on-chain context
+- optional expanded context, including live refresh and Avalanche on-chain context
+
+### Homepage
+
+When no protocol is selected, the homepage is intentionally lightweight:
+
+- a product definition
+- four global metrics
+- three action cards
+- two example shortcuts
+
+It is designed to open as a product home rather than a pre-selected protocol report.
 
 ### 2. Leaderboard
 
@@ -113,8 +124,7 @@ This is the main model currently driving the product's score.
 
 The product computes:
 
-- `dead_probability = stage1_terminal_prob`
-- `health_score = 100 * (1 - dead_probability)`
+- `health_score = 100 * (1 - stage1_terminal_prob)`
 
 Current risk bands:
 
@@ -222,6 +232,10 @@ Important files:
 - `early_features_v2.csv`
 - `product_schema_v2.csv`
 
+Important deployment note:
+
+The deployed Streamlit app loads these canonical v2 outputs directly. It does not rebuild the dataset or retrain the models at boot.
+
 Key data ideas:
 
 - only AVAX core-eligible protocols can enter the main scoring universe
@@ -286,6 +300,16 @@ AvaForensics/
 │   └── SUBMISSION_CHECKLIST.md
 └── requirements.txt
 ```
+
+## Research Backbone
+
+The current product is backed by the `protocol_decay_lab` research track:
+
+- `rebuild_dataset_v2.py` rebuilds the clean AVAX-core universe
+- `protocol_decay_lab.py` defines early-window features and the structural-decay event
+- `retrain_v2_models.py` retrains the Stage 1 model and Stage 2 interpretation assets
+- `build_product_schema_v2.py` assembles the product-facing schema
+- address and activity experiments strengthen evidence levels for relocation, native revival, and AVAX-side weakness
 
 ## Technical Notes
 

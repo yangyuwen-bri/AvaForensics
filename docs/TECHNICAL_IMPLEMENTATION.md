@@ -36,6 +36,32 @@ flowchart LR
     L --> J
 ```
 
+## Runtime Shape
+
+The deployed Streamlit app is intentionally narrow. It has three user-facing surfaces:
+
+1. **Protocol View**
+   - one protocol at a time
+   - summary bar
+   - Early Risk
+   - Lifecycle Interpretation
+   - AVAX core TVL chart
+   - "Why This Looks Risky"
+   - optional expanded context
+
+2. **Leaderboard**
+   - `Early Risk Ranking`
+   - `Lifecycle Interpretation`
+
+3. **Method**
+   - explains the three-layer read:
+     - Stage 1 early risk
+     - current AVAX footprint
+     - Stage 2 lifecycle interpretation + evidence
+   - documents current coverage and limits
+
+This is important for interpretation: the product is not a single-score dashboard anymore.
+
 ## Product Definition
 
 At runtime, AvaForensics answers four different questions:
@@ -217,8 +243,8 @@ Temporal holdout AUC:
 
 In the product:
 
-- `dead_probability = stage1_terminal_prob`
-- `health_score = 100 * (1 - dead_probability)`
+- `stage1_terminal_risk = stage1_terminal_prob`
+- `health_score = 100 * (1 - stage1_terminal_prob)`
 
 Risk band thresholds:
 
@@ -389,6 +415,14 @@ Important fields:
 - `current_total_core_tvl`
 - `current_avax_share`
 
+The product does not expose every raw field directly. Instead it maps them into:
+
+- a summary bar
+- an Early Risk card
+- a Lifecycle Interpretation card
+- leaderboard lifecycle rows
+- method-page coverage notes
+
 This schema is what the Streamlit product consumes to construct:
 
 - summary bar
@@ -416,6 +450,20 @@ Main responsibilities:
 - build activation-adjusted histories for protocol charts
 - run optional live refresh
 
+### Deployment Dependency
+
+The deployed app does **not** rebuild `dataset v2` or retrain `model v2` at startup.
+
+Instead, runtime depends on checked-in v2 artifacts:
+
+- `experiments/protocol_decay_lab/outputs/dataset_v2/*.csv`
+- `experiments/protocol_decay_lab/outputs/model_v2/product_schema_v2.csv`
+- `experiments/protocol_decay_lab/outputs/model_v2/two_stage_v2_scores.csv`
+- `experiments/protocol_decay_lab/outputs/model_v2/stage1_model_leaderboard_v2.csv`
+- `experiments/protocol_decay_lab/outputs/model_v2/stage1_feature_importance_v2.csv`
+
+This is intentional because Streamlit Cloud only needs to load the canonical outputs, not rerun the research pipeline on boot.
+
 ### Product Views
 
 The current UI is organized around:
@@ -427,12 +475,21 @@ The current UI is organized around:
 
 The protocol page is intentionally split into:
 
-- one summary line
+- one summary bar
 - `Early Risk`
 - `Lifecycle Interpretation`
 - AVAX core TVL chart
 - `Why This Looks Risky`
-- more context
+- `More Context`
+
+The homepage is intentionally lightweight:
+
+- product definition
+- four global metrics
+- three action cards
+- two example shortcuts
+
+It should open as a product home, not a pre-selected protocol report.
 
 ## Live Refresh Layer
 
@@ -471,7 +528,7 @@ What it still does not do:
 
 The current AvaForensics implementation should be read as:
 
-- **Stage 1** = early-warning risk model
+- **Stage 1** = early-warning risk model for the next 365 days
 - **Current AVAX Footprint** = present Avalanche presence layer
 - **Stage 2** = lifecycle interpretation layer
 - **Evidence Level** = interpretation strength layer
