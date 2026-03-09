@@ -1,0 +1,8 @@
+decay_mode_v2,protocol_count
+terminal_global_decay,176
+resilient_or_unproven,171
+native_revival_or_threshold_boundary,48
+multichain_relocation,18
+avax_side_decay_but_globally_alive,8
+not_core_eligible,6
+data_incomplete,1

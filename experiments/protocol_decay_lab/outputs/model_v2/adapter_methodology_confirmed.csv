@@ -1,0 +1,12 @@
+slug,module_path,adapter_source_type,adapter_source_note
+angle,angle/index.js,adapter_onchain_aggregate,"Adapter uses on-chain balance aggregation via sumTokens2 across protocol-managed contracts."
+dyson,dyson-money/index.js,adapter_onchain_aggregate,"Adapter counts tokens locked in contracts with on-chain token-owner aggregation."
+ante-finance,ante/index.js,adapter_onchain_aggregate,"Adapter aggregates pool token balances directly on-chain."
+balmy,meanfinance/index.js,adapter_onchain_aggregate,"Adapter uses on-chain token-owner aggregation for protocol TVL."
+guru-network-classic,Guru/index.js,adapter_onchain_aggregate,"Adapter methodology states direct on-chain storage of quantity, pools and prices across contracts."
+kyberswap-elastic,kyber/index.js,adapter_subgraph,"Adapter fetches Avalanche TVL from KyberSwap Avalanche subgraph endpoints."
+sushi-kashi,sushiswap-kashi/kashi-lending.js,adapter_subgraph,"Adapter uses Avalanche Kashi subgraph and Avalanche BentoBox address for TVL and borrowed state."
+sushi-trident,sushiswap-trident/index.js,adapter_subgraph,"Adapter fetches TVL from Trident subgraphs rather than a single Avalanche contract."
+mint-club-v2,mint-club-v2/index.js,adapter_onchain_aggregate,"Adapter aggregates bonding-curve and staking balances on-chain with sumTokens2."
+voltz,voltz/index.js,adapter_onchain_aggregate,"Adapter enumerates margin engines from factory logs and sums holdings on-chain."
+steer-protocol,steer/index.js,adapter_subgraph,"Adapter relies on chain-specific subgraph endpoints for TVL."

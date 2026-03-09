@@ -1,0 +1,17 @@
+{
+  "protocols_total": 428,
+  "fetch_failures": 1,
+  "cached_payload_protocols": 427,
+  "avax_core_history_protocols": 421,
+  "total_only_protocols": 6,
+  "missing_history_protocols": 0,
+  "early_feature_rows_v2": 415,
+  "summary_rows_v2": 428,
+  "migrated_candidates_v2": 33,
+  "structural_decay_known_v2": 348,
+  "core_eligible_protocols_v2": 421,
+  "boundary_excluded_protocols_v2": 6,
+  "data_incomplete_protocols_v2": 1,
+  "old_early_feature_rows": 422,
+  "old_summary_rows": 424
+}

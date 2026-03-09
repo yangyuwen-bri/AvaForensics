@@ -1,0 +1,5 @@
+decay_mode_v2,activity_validation_status,protocol_count
+multichain_relocation,address_unavailable,18
+native_revival_or_threshold_boundary,address_unavailable,6
+native_revival_or_threshold_boundary,no_recent_avax_activity,6
+native_revival_or_threshold_boundary,supports_native_revival,3
