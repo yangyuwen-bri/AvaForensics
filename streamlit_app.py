@@ -126,6 +126,88 @@ def _protocol_frame(state: Dict[str, object]) -> pd.DataFrame:
     raise KeyError("State does not expose a protocol dataframe.")
 
 
+def _get_watchlist() -> List[str]:
+    watchlist = st.session_state.setdefault("watchlist_slugs", [])
+    if not isinstance(watchlist, list):
+        watchlist = list(watchlist)
+        st.session_state["watchlist_slugs"] = watchlist
+    return watchlist
+
+
+def _is_watchlisted(slug: str) -> bool:
+    return slug in _get_watchlist()
+
+
+def _toggle_watchlist(slug: str) -> None:
+    watchlist = _get_watchlist()
+    if slug in watchlist:
+        watchlist.remove(slug)
+    else:
+        watchlist.append(slug)
+    st.session_state["watchlist_slugs"] = watchlist
+
+
+def _render_watchlist_sidebar(protocols: pd.DataFrame, watchlist: List[str], available_slugs: set[str]) -> None:
+    if not watchlist:
+        return
+    st.markdown("#### Watchlist")
+    for watch_slug in watchlist:
+        if watch_slug in available_slugs:
+            watch_name = protocols.loc[protocols["slug"] == watch_slug, "name"].iloc[0]
+            if st.button(f"{watch_name} ({watch_slug})", key=f"watchlist_{watch_slug}", use_container_width=True):
+                st.session_state["selected_protocol_slug"] = watch_slug
+                st.session_state["current_view"] = "Protocol View"
+                st.rerun()
+    st.caption(f"{len(watchlist)} protocol(s) in watchlist.")
+
+
+def _normalize_watchlist(slugs: List[str], available_slugs: set[str]) -> List[str]:
+    seen = set()
+    normalized: List[str] = []
+    for slug in slugs:
+        if slug in available_slugs and slug not in seen:
+            normalized.append(slug)
+            seen.add(slug)
+    return normalized
+
+
+def _query_watchlist_value() -> str | None:
+    raw = st.query_params.get("watchlist")
+    if raw is None:
+        return None
+    if isinstance(raw, list):
+        return raw[0] if raw else None
+    return str(raw)
+
+
+def _sync_watchlist_with_query_params(available_slugs: set[str]) -> List[str]:
+    current = _normalize_watchlist(_get_watchlist(), available_slugs)
+    st.session_state["watchlist_slugs"] = current
+
+    # Hydrate from the URL only on first load. After that, the in-session
+    # watchlist becomes the source of truth and writes back into query params.
+    if not st.session_state.get("watchlist_query_initialized", False):
+        query_value = _query_watchlist_value()
+        if query_value is not None:
+            requested = [slug.strip() for slug in query_value.split(",") if slug.strip()]
+            query_watchlist = _normalize_watchlist(requested, available_slugs)
+            if query_watchlist != current:
+                current = query_watchlist
+                st.session_state["watchlist_slugs"] = current
+        st.session_state["watchlist_query_initialized"] = True
+
+    desired_value = ",".join(current)
+    current_query = _query_watchlist_value()
+    if current:
+        if current_query != desired_value:
+            st.query_params["watchlist"] = desired_value
+    else:
+        if current_query is not None and "watchlist" in st.query_params:
+            del st.query_params["watchlist"]
+
+    return current
+
+
 def _inject_styles() -> None:
     st.markdown(
         """
@@ -609,13 +691,13 @@ def _render_live_refresh(live_data: Dict[str, object]) -> None:
         ]
         _render_supporting_metrics(context_items)
 
-    with st.expander("See all live monitoring signals"):
-        signal_frame = pd.DataFrame(live_data["all_live_signals"])
-        st.dataframe(
-            signal_frame[["label", "value", "risk_score", "alive_median", "dead_median", "narrative"]],
-            use_container_width=True,
-            hide_index=True,
-        )
+    st.markdown("#### Live Monitoring Signals")
+    signal_frame = pd.DataFrame(live_data["all_live_signals"])
+    st.dataframe(
+        signal_frame[["label", "value", "risk_score", "alive_median", "dead_median", "narrative"]],
+        use_container_width=True,
+        hide_index=True,
+    )
 
 
 def _render_empty_protocol_state(protocols: pd.DataFrame) -> None:
@@ -652,11 +734,17 @@ def _render_empty_protocol_state(protocols: pd.DataFrame) -> None:
     with examples[0]:
         if st.button("Try Resilient Start Example: Benqi Lending", use_container_width=True, disabled="benqi-lending" not in available_slugs):
             st.session_state["pending_protocol_slug"] = "benqi-lending"
+            st.session_state["current_view"] = "Protocol View"
             st.rerun()
     with examples[1]:
         if st.button("Try Failed Example: Blizz Finance", use_container_width=True, disabled="blizz-finance" not in available_slugs):
             st.session_state["pending_protocol_slug"] = "blizz-finance"
+            st.session_state["current_view"] = "Protocol View"
             st.rerun()
+
+
+def _handle_protocol_selection() -> None:
+    st.session_state["current_view"] = "Protocol View"
 
 
 def main() -> None:
@@ -665,8 +753,14 @@ def main() -> None:
     state = _load_state()
     overview = state["overview"]
     protocols = _protocol_frame(state).sort_values(["health_score", "name"], ascending=[False, True])
+    available_slugs = set(protocols["slug"])
+    watchlist = _sync_watchlist_with_query_params(available_slugs)
 
     _render_hero(overview)
+
+    available_views = ["Protocol View", "Leaderboard", "Method"]
+    if st.session_state.get("current_view") not in available_views:
+        st.session_state["current_view"] = "Protocol View"
 
     with st.sidebar:
         st.header("Protocol Explorer")
@@ -680,9 +774,16 @@ def main() -> None:
             "Find a protocol",
             options=protocol_options,
             key="selected_protocol_slug",
+            on_change=_handle_protocol_selection,
             format_func=lambda slug: "Choose a protocol..." if slug == "" else f"{protocols.loc[protocols['slug'] == slug, 'name'].iloc[0]} ({slug})",
         )
         st.caption("Choose a protocol to inspect its AVAX lifecycle.")
+        if selected_slug and st.session_state.get("current_view") == "Protocol View":
+            button_label = "Remove from Watchlist" if _is_watchlisted(selected_slug) else "Add to Watchlist"
+            if st.button(button_label, use_container_width=True):
+                _toggle_watchlist(selected_slug)
+                st.rerun()
+        _render_watchlist_sidebar(protocols, watchlist, available_slugs)
 
     live_cache = st.session_state.setdefault("live_refresh_cache", {})
 
@@ -692,9 +793,15 @@ def main() -> None:
     top_metrics[2].metric("Resilient starts", overview["healthy_count"])
     top_metrics[3].metric("Fragile starts", overview["high_risk_count"])
 
-    tabs = st.tabs(["Protocol View", "Leaderboard", "Method"])
+    current_view = st.radio(
+        "View",
+        available_views,
+        key="current_view",
+        horizontal=True,
+        label_visibility="collapsed",
+    )
 
-    with tabs[0]:
+    if current_view == "Protocol View":
         sidebar_refresh = False
         with st.sidebar:
             sidebar_refresh = st.button("Live Refresh Selected Protocol", use_container_width=True, disabled=not selected_slug)
@@ -754,8 +861,8 @@ def main() -> None:
                     hide_index=True,
                 )
 
-    with tabs[1]:
-        filter_columns = st.columns([1.15, 0.85, 0.85, 2.0])
+    elif current_view == "Leaderboard":
+        filter_columns = st.columns([1.05, 0.8, 0.8, 0.8, 1.75])
         with filter_columns[0]:
             view_mode = st.selectbox("View", ["Early Risk Ranking", "Lifecycle Interpretation"])
         with filter_columns[1]:
@@ -763,6 +870,8 @@ def main() -> None:
         with filter_columns[2]:
             top_n = st.selectbox("Rows", [10, 25, 50, 100], index=1)
         with filter_columns[3]:
+            watchlist_only = st.checkbox("Watchlist only", value=False, disabled=not bool(watchlist))
+        with filter_columns[4]:
             st.markdown(
                 "<div class='section-note'>Use Early Risk Ranking to sort by Stage 1 signal strength, "
                 "or Lifecycle Interpretation to scan relocation, revival, and AVAX-side weakness with evidence context.</div>",
@@ -770,9 +879,14 @@ def main() -> None:
             )
 
         leaderboard = _load_leaderboard(state, band_filter=band_filter, top_n=top_n, view_mode=view_mode)
+        if watchlist_only and watchlist:
+            protocol_col = "Protocol" if "Protocol" in leaderboard.columns else None
+            if protocol_col:
+                watch_names = set(protocols.loc[protocols["slug"].isin(watchlist), "name"])
+                leaderboard = leaderboard[leaderboard[protocol_col].isin(watch_names)]
         st.dataframe(leaderboard, use_container_width=True, hide_index=True)
 
-    with tabs[2]:
+    else:
         st.subheader("What This Product Does")
         st.markdown(
             """

@@ -48,19 +48,23 @@ The deployed Streamlit app is intentionally narrow. It has three user-facing sur
    - AVAX core TVL chart
    - "Why This Looks Risky"
    - optional expanded context
+   - add/remove watchlist entry for the currently selected protocol
 
 2. **Leaderboard**
    - `Early Risk Ranking`
    - `Lifecycle Interpretation`
+   - optional `Watchlist only` filtering
 
 3. **Method**
    - explains the three-layer read:
      - Stage 1 early risk
      - current AVAX footprint
      - Stage 2 lifecycle interpretation + evidence
-   - documents current coverage and limits
+    - documents current coverage and limits
 
 This is important for interpretation: the product is not a single-score dashboard anymore.
+
+The UI is implemented as an explicit single-view router rather than a nested-tab layout. This keeps reruns more stable for actions such as protocol selection, leaderboard filtering, and live refresh.
 
 ## Product Definition
 
@@ -490,6 +494,23 @@ The homepage is intentionally lightweight:
 - two example shortcuts
 
 It should open as a product home, not a pre-selected protocol report.
+
+## Watchlist MVP
+
+The app now includes a lightweight monitoring workflow:
+
+- add/remove the selected protocol from a watchlist in **Protocol View**
+- use the sidebar watchlist as a quick-jump navigation set
+- filter the leaderboard to `Watchlist only`
+- persist the watchlist through URL query parameters
+
+The current implementation is intentionally light:
+
+- no account system
+- no multi-list management
+- no external alert delivery
+
+This is meant to validate recurring protocol monitoring behavior before a heavier persistence or alerting system is introduced.
 
 ## Live Refresh Layer
 

@@ -75,6 +75,7 @@ For any selected protocol, the UI shows:
 - an activation-adjusted AVAX core TVL history chart
 - early-window risk signals
 - optional expanded context, including live refresh and Avalanche on-chain context
+- a lightweight watchlist workflow for saving protocols into a recurring monitoring set
 
 ### Homepage
 
@@ -99,6 +100,8 @@ This allows the product to be used either as:
 - an early-warning ranking tool
 - or a lifecycle scanning tool
 
+The leaderboard also supports a **Watchlist only** mode so users can scan just the protocols they are actively tracking.
+
 ### 3. Method
 
 The product includes a `Method` tab that explains:
@@ -107,6 +110,15 @@ The product includes a `Method` tab that explains:
 - what Stage 2 means
 - what evidence level means
 - why a high early score does not automatically imply strong current AVAX health
+
+### Watchlist Workflow
+
+The current product includes a lightweight watchlist MVP:
+
+- protocols can be added or removed from a watchlist in **Protocol View**
+- the sidebar acts as a quick-jump list for tracked protocols
+- the leaderboard can be filtered to `Watchlist only`
+- the watchlist is synced into the URL for lightweight persistence and sharing
 
 ## Stage 1 Early-Risk Model
 
